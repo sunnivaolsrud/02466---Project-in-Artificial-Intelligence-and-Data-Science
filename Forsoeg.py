@@ -31,13 +31,13 @@ data_pretrial_head = data_pretrial.columns.values
 
 # Hist of pretrail
 
-plt.subplot(2,1,1)
-plt.hist(data_pretrial[data_pretrial["race"] == "Caucasian"]["decile_score.1"])
+#plt.subplot(2,1,1)
+#plt.hist(data_pretrial[data_pretrial["race"] == "Caucasian"]["decile_score.1"])
 
-plt.subplot(2,1,2)
-plt.hist(data_pretrial[data_pretrial["race"] == "African-American"]["decile_score.1"])
+#plt.subplot(2,1,2)
+#plt.hist(data_pretrial[data_pretrial["race"] == "African-American"]["decile_score.1"])
 
-plt.show()
+#plt.show()
 
 # Stat of pretrail
 
@@ -46,15 +46,23 @@ print(np.mean(data_pretrial[data_pretrial["race"] == "African-American"]["decile
 
 # Plot of 2year
 
-plt.subplot(2,1,1)
-plt.hist(data_2years[data_2years["race"] == "Caucasian"]["decile_score.1"])
+#Caucasian = data_pretrial[data_pretrial["race"] == "Caucasian"]["decile_score.1"]
+#Black = data_pretrial[data_pretrial["race"] == "African-American"]["decile_score.1"]
 
-plt.subplot(2,1,2)
-plt.hist(data_2years[data_2years["race"] == "African-American"]["decile_score.1"])
+Caucasian = data_2years[data_2years["race"] == "Caucasian"]["decile_score.1"]
+Black = data_2years[data_2years["race"] == "African-American"]["decile_score.1"]
 
+
+plt.hist([Caucasian,Black], label = ["Caucasian", "African-American"], bins = [i - 0.5 for i in range(1,12)])
+
+plt.xlabel("Decile score", fontsize=10)  
+plt.ylabel("Number of convicted", fontsize=10)
+
+plt.xticks(range(11))
+
+plt.legend()
+plt.title("2 year decile scores", fontdict= {'fontsize': 14})
 plt.show()
-
-#decile_score.1
 
 
 #print(np.sum(data_pretrial["race"] == "Caucasian"),np.sum(data_pretrial["race"] == "African-American"))
