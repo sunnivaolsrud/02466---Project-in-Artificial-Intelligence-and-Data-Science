@@ -48,7 +48,7 @@ plt.legend(('Caucasian defendents ($\mu$ = %.2f)' % meanc, 'African-American def
 plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9,10])
 plt.show()
 
-<<<<<<< HEAD
+
 # Plot of 2year
 meanc1 = (np.mean(data_2years[data_2years["race"] == "Caucasian"]["decile_score.1"]))
 meana1 = (np.mean(data_2years[data_2years["race"] == "African-American"]["decile_score.1"]))
@@ -63,24 +63,14 @@ plt.legend(('Caucasian defendents ($\mu$ = %.2f)' % meanc1, 'African-American de
            shadow=True, loc=(0.2, 0.8), fontsize=9)
 plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9,10])
 plt.show()
-#decile_score.1
-=======
-#plt.subplot(2,1,1)
-#plt.hist(data_pretrial[data_pretrial["race"] == "Caucasian"]["decile_score.1"])
 
-#plt.subplot(2,1,2)
-#plt.hist(data_pretrial[data_pretrial["race"] == "African-American"]["decile_score.1"])
 
-#plt.show()
->>>>>>> 020ac36c7b56cba68e9035ea607cb2a4821ced08
+
 
 # Stat of pretrail
 print(np.mean(data_pretrial[data_pretrial["race"] == "Caucasian"]["decile_score.1"]))
 print(np.mean(data_pretrial[data_pretrial["race"] == "African-American"]["decile_score.1"]))
 
-<<<<<<< HEAD
-=======
-# Plot of 2year
 
 #Caucasian = data_pretrial[data_pretrial["race"] == "Caucasian"]["decile_score.1"]
 #Black = data_pretrial[data_pretrial["race"] == "African-American"]["decile_score.1"]
@@ -99,8 +89,6 @@ plt.xticks(range(11))
 plt.legend()
 plt.title("2 year decile scores", fontdict= {'fontsize': 14})
 plt.show()
-
->>>>>>> 020ac36c7b56cba68e9035ea607cb2a4821ced08
 
 #print(np.sum(data_pretrial["race"] == "Caucasian"),np.sum(data_pretrial["race"] == "African-American"))
 from datetime import datetime
