@@ -200,7 +200,7 @@ def write_two_year_file(f, pop, test, headers):
 def create_two_year_files():
     people = []
     headers = []
-    with open("./cox-parsed.csv") as f:
+    with open("./data/cox-parsed.csv") as f:
         reader = PeekyReader(DictReader(f))
         try:
             while True:
@@ -219,9 +219,9 @@ def create_two_year_files():
                        i.lifetime > 730,
                        filter(lambda x: x.vscore_valid, people)))
 
-    write_two_year_file("./compas-scores-two-years.csv", pop,
+    write_two_year_file("./data/compas-scores-two-years.csv", pop,
                         'recidivist', headers)
-    write_two_year_file("./compas-scores-two-years-violent.csv", vpop,
+    write_two_year_file("./data/compas-scores-two-years-violent.csv", vpop,
                         'violent_recidivist', headers)
 
 
