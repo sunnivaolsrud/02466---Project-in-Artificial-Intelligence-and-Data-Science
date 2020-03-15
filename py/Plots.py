@@ -7,6 +7,7 @@ Created on Sun Feb 16 10:16:17 2020
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
+import os
 
 #Comments on loading dataset are obtained from https://arxiv.org/pdf/1906.04711.pdf
 
@@ -67,3 +68,10 @@ plt.show()
 
 #print(np.sum(data_pretrial["race"] == "Caucasian"),np.sum(data_pretrial["race"] == "African-American"))
 
+
+
+my_path = os.path.abspath(__file__) # Figures out the absolute path for you in case your working directory moves around.
+
+fig.savefig(my_path + '/Sub Directory/graph.png')
+
+plt.savefig('Histogram1.png')
