@@ -7,6 +7,7 @@ Created on Wed Apr 15 17:47:11 2020
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import OneHotEncoder
 from datetime import datetime
 date_format = "%Y-%m-%d"
 
@@ -45,28 +46,41 @@ class dataprocess:
                 else: 
                     d.append(np.nan)
         
-        self.data[name] = d
+        self.data.join(d)
         return d
     
+    def hotK(self, featurename): 
+        """
+        featurename: Name of the feature for onehotK
+        num: False by default. define as True if data is nummerical. 
+        (classes needs to be sorted for nummerical data)
+        """
+        hot =[]
+        for i in range(len(featurename)): 
+            hot.append(pd.get_dummies(self.data[featurename[i]]))
+            
+        self.data = self.data.drop(featurename, axis=1)
+        self.data = self.data.join(hot)
+        
+        return 
     
-    def as_numbers(self,attri):
-        """
-        input: Categorical attribute consisting of strings 
-        function: changes attribute to nummerical data in dataset
-        returns: dictionary with strings and corresponding nummerical value
-        """
+  #  def as_numbers(self,attri):
+   #     """
+    #    input: Categorical attribute consisting of strings 
+     #   function: changes attribute to nummerical data in dataset
+      ## """
 
-        group = self.data[attri].unique()
-        idx = [type(group[i]) for i in range(len(group))]
-        if [float in idx]:
-            group.remove(group[idx==float])
-        dic = {}
-        for i,j in enumerate(group):
-            dic[j] = i
+        #group = self.data[attri].unique()
+     #   idx = [type(group[i]) for i in range(len(group))]
+      #  if [float in idx]:
+       #     group.remove(group[idx==float])
+        #dic = {}
+        #for i,j in enumerate(group):
+        #    dic[j] = i
                 
-        self.data.replace(dic, inplace=True)
+       # self.data.replace(dic, inplace=True)
            
-        return dic
+        #return dic
     
     
 
@@ -78,14 +92,15 @@ twoyears = dataprocess("./data/compas-scores-two-years.csv")
 ## Compute legth of stay of compas-score prison time
 length  = twoyears.days_len("c_jail_in","c_jail_out",'c_len_of_stay')
 
-##compute nummerical categorical attributes
-d_sex = twoyears.as_numbers('sex')
-d_agecat = twoyears.as_numbers('age_cat')
-d_race = twoyears.as_numbers('race')
-d_c_charge_desc = twoyears.as_numbers('c_charge_desc')
+##Drop some columns
+keeplist = ['sex', 'age', 'age_cat', 'race', 'juv_fel_count', 
+       'juv_misd_count', 'juv_other_count', 'priors_count', 'c_days_from_compas',
+       'c_charge_degree', 'r_charge_degree', 'vr_charge_degree',
+       'decile_score.1', 'score_text','two_year_recid', 'c_len_of_stay']
 
-#.....
+twoyears.data = twoyears.data[keeplist]
 
-#Der mangler stadig en funktion med one-out-of-K (tænker egentlig det er bedre en min as_numbers lol)
-#Og det ville være fedt med en function der tager n attributes, og fjerner observationer hvor disse har nans 
-#hvis vi altså vil det
+## One hot K 
+klist = ['sex', 'age_cat', 'race', 'c_charge_degree', 'r_charge_degree', 'vr_charge_degree', 'score_text']
+twoyears.hotK(klist)
+
