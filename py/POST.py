@@ -321,16 +321,59 @@ accs = DATA.acc_(np.arange(0,11))
 
 max_accs = [np.argmax(accs[0]), np.argmax(accs[1])]
 
+
+# Test fra stack overflow, vi skal have skrevet vores egen, hvis det er worth
+
+def line(p1, p2):
+    A = (p1[1] - p2[1])
+    B = (p2[0] - p1[0])
+    C = (p1[0]*p2[1] - p2[0]*p1[1])
+    return A, B, -C
+
+def intersection(L1, L2):
+    D  = L1[0] * L2[1] - L1[1] * L2[0]
+    Dx = L1[2] * L2[1] - L1[1] * L2[2]
+    Dy = L1[0] * L2[2] - L1[2] * L2[0]
+    if D != 0:
+        x = Dx / D
+        y = Dy / D
+        return x,y
+    else:
+        return False
+
+def percentile(p1,p2,p3):
+    l1 = np.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2)
+    l2 = np.sqrt((p1[0]-p3[0])**2+(p1[1]-p3[1])**2)
+
+    return l1/l2
+
+l1 = line([Cx[4],Cx[4]],[Cx[3],Cy[3]])
+l2 = line([0,0],[Ax[5],Ay[5]])
+
+inter = intersection(l1,l2)
+print(inter)
+
+perc1 = percentile([Cx[4],Cx[4]],[Cx[3],Cy[3]],[inter[0],inter[1]])
+perc2 = percentile([0,0],[Ax[5],Ay[5]],[inter[0],inter[1]])
+
+print("1. interpolation:", perc1)
+print("2. interpolation:", perc2)
+
+"""
+print(Ax[5],Ay[5])
+print(Cx[0],Cy[0])
+print(Cx[3],Cy[3])
+print(Cx[4],Cy[4])
+"""
+
 plt.plot(Ax,Ay, "o")
 plt.plot(Cx,Cy, "o")
 
-plt.plot([Cx[9],Cx[3]],[Cy[9],Cy[3]])
+#plt.plot([Cx[9],Cx[3]],[Cy[9],Cy[3]])
+#plt.plot([Cx[4],Cx[3]],[Cy[4],Cy[3]])
 
-plt.plot(Cx[5],Cy[5], "o")
+#plt.plot(Cx[5],Cy[5], "o")
 plt.plot(Ax[5],Ay[5], "o")
+plt.plot(inter[0],inter[1],"o")
 
 plt.show()
-
-
-
-
