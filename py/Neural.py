@@ -1,11 +1,11 @@
-# first neural network with keras tutorial
+#from keras.models import Sequential
+#from keras.layers import Dense
 
-from keras.models import Sequential
-from keras.layers import Dense
+from Process_data import twoyears
 
-
+"""
 # load the dataset
-dataset = "hej"
+dataset = [[1,2],[2,2]]
 
 
 # split into input (X) and output (y) variables
@@ -34,4 +34,4 @@ _, accuracy = model.evaluate(X, y)
 print('Accuracy: %.2f' % (accuracy*100))
 
 
-print("PASSWORD PLZ")
+"""
