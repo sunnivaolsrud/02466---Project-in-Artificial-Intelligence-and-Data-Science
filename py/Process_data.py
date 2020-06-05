@@ -84,8 +84,6 @@ class dataprocess:
     
     
 
-
-
 ##define class variabel
 twoyears = dataprocess("./data/compas-scores-two-years.csv")
 
@@ -103,4 +101,8 @@ twoyears.data = twoyears.data[keeplist]
 ## One hot K 
 klist = ['sex', 'age_cat', 'race', 'c_charge_degree', 'r_charge_degree', 'vr_charge_degree', 'score_text']
 twoyears.hotK(klist)
+
+
+#remove nans
+twoyears.data = twoyears.data.dropna(axis = 0)
 

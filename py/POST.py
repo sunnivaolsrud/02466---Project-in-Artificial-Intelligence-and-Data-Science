@@ -45,50 +45,17 @@ class equal:
             
         self.Groups = Groups
 
-    def ROC(self ,makeplot=True, GetAllOutput=False):
-        """
-        Allthresholds: list of all thresholds of ROC curve. 
-        For A=a , allthresholds[i] is the thresholds used to compute (allfpr[i],alltpr[i])
-        alltpr and allfpr: for a given ROC curve they define points in the FP, TP plane 
-        allauc: AUC of all ROC curves
-        """
-        
-        allthresholds, allfpr, alltpr, allauc = [], [], [], []
-        if makeplot: 
-            plt.figure(figsize=(8,6))
-        for g in self.Groups:  
-            fpr, tpr, thresholds = metrics.roc_curve(g['ytrue'], g['yhat'],pos_label=1)
-            fpr = fpr.tolist()
-            tpr = tpr.tolist()
-            thresholds = thresholds.tolist()
-            allfpr = allfpr + fpr
-            alltpr = alltpr + tpr
-            allthresholds = allthresholds+thresholds
-          
-            roc_auc  = metrics.auc(fpr, tpr)
-            allauc.append(roc_auc)
-            if makeplot:  
-                plt.plot(fpr, tpr, label='%s ROC (area = %0.2f)' % (g['groupname'], roc_auc))
-        
-        if makeplot: 
-            plt.plot([0, 1], [0, 1], 'k--')
-            
-            plt.xlim([0.0, 1.0])
-            plt.ylim([0.0, 1.0])
-            plt.xlabel('False Positive Rate')
-            plt.ylabel('True Positive Rate')
-            plt.legend(loc=0, fontsize='small')
-            plt.show()
-        
-        if GetAllOutput:             
-            return allthresholds, allfpr, alltpr, allauc, thresholds
-        else: 
-            return allthresholds, allfpr, alltpr, allauc
     
-    def calc_ConfusionMatrix(self,t1, t2, g, p1, OnlyOne = False, positive_label = 1):
+    def calc_ConfusionMatrix(self,t1, t2, g, p2, OnlyOne = False, positive_label = 1):
         """
+        Computes confusionsmatrix for randomised predictor
+        
         Computestp, fp, tn, fn for all groups by default.
         If OnlyOne is True it only computes for one group
+        
+        p2: probability of t2, which is the distance from t1 to the "correct point"
+        "t1 and t2": thresholds
+        
         """
         tp=fp=tn=fn=0
         bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
@@ -106,17 +73,19 @@ class equal:
                     fn += 1
                 
             elif score>=t1 and score<=t2: 
-                mid = np.random.choice([0,1], p = [1-p1,p1])
+                mid = np.random.choice([0,1], p = [1-p2,p2])
                 if mid: 
                     if truth: 
                         tp+=1
                     else: fp+=1
                 else: 
-                    if not truth: 
-                        tn+=1
-                    else: 
+                    if truth: 
                         fn+=1
+                    else: 
+                        tn+=1
         return ConfusionMatrix(tp, fp, tn, fn)
+    
+    
                     
     def conf_(self,t, g, positive_label=1):
         bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
@@ -165,33 +134,14 @@ class equal:
             ALLfpr[R] = fprl
             ALLtpr[R] = tprl
         
-
-
-
-        #plt.figure(figsize=(8,6))   
-        #for idx,R in enumerate(self.Race):
-
-            #roc_auc  = metrics.auc(fpr, tpr)
-            #allauc.append(roc_auc)
-            #plt.plot(ALLfpr[R], ALLtpr[R])#, label='%s ROC (area = %0.2f)' % (g['groupname'], roc_auc))
-        
-        #plt.plot([0, 1], [0, 1], 'k--')
-        
-       # plt.xlim([0.0, 1.0])
-       # plt.ylim([0.0, 1.0])
-       ## plt.xlabel('False Positive Rate')
-        #plt.ylabel('True Positive Rate')
-        #plt.legend(loc=0, fontsize='small')
-        #plt.show()
         return ALLfpr, ALLtpr
 
 
     def acc_(self,T,makeplot=True, GetAllOutput=False):
         """
-        Allthresholds: list of all thresholds of ROC curve. 
-        For A=a , allthresholds[i] is the thresholds used to compute (allfpr[i],alltpr[i])
-        alltpr and allfpr: for a given ROC curve they define points in the FP, TP plane 
-        allauc: AUC of all ROC curves
+        T: list of thresholds 
+        Computes accuracies given lidt of thresholds
+        accs: accuracies given list of thresholds
         """
 
         accs = []
@@ -213,84 +163,10 @@ class equal:
         return accs
 
 
-    def THEPOINT(self,t, t1, t2, g, p1, PlotAllt= False, MakePlot = True):
-        
-            """
-            This function always computes all ROC curves. 
-            
-            
-            If PlotAllt=True: Computes FPR, TPR corresponding to threshold=t for all groups 
-            and plots it if MakePlot is True
-            
-            If PlotAllt = False (default) following happens: 
-            We wish to choose a point in the (FP, TP) plane, on the ROC curve
-            that defines the upper-left edge of the Convex Hull. This is done as follows: 
-            Define the wantsed ROC curve as the ROC curve with the smallest AUC. 
-            (minROC) and then we compute FPR and TPR for minROC corresponding to t (input)
-            For group g, it computes a randomised predictor with t1, t2 and p1. 
-            Ig MakePlot = True the results are plotted
-            
-            """
-            allthresholds, allfpr, alltpr, allauc, thresholds = self.ROC(False,True)
-            
-            #Define number of points in one ROC curve
-            M = len(thresholds)
-            
-            #Rates pr group (ROC curve values)
-            pltfpr = (np.asarray(allfpr)).reshape(len(self.Groups),M)
-            plttpr= (np.asarray(alltpr)).reshape(len(self.Groups),M)
-            
-            curveidx= np.argmin(allauc)
-                #index of chosen threshold (assuning the same thresholds are used for all ROC curves)
-            thresholdidx = thresholds.index(t)
-            #Define FPR, TPR according to t, for each group: 
-            if PlotAllt: 
-                FPRall = pltfpr[:,thresholdidx]
-                TPRall = plttpr[:,thresholdidx]
-                
-                if MakePlot:
-                    #Plot with point and coherent threshold
-                    for i,gr in enumerate(self.Groups): 
-                                   plt.plot(pltfpr[i,:], plttpr[i,:], label='%s ROC (area = %0.2f)' % (gr['groupname'], allauc[i]))
-                    plt.plot([0, 1], [0, 1], 'k--')
-                    plt.plot(FPRall, TPRall, 'go', label = "threshold = %s" %t)
-                    plt.xlim([0.0, 1.0])
-                    plt.ylim([0.0, 1.0])
-                    plt.xlabel('False Positive Rate')
-                    plt.ylabel('True Positive Rate')
-                    plt.legend(loc=0, fontsize='small')
-                    plt.show()
-                return FPRall, TPRall
-                    
-                 
-            else: 
-
-                #rate with t on lowest ROC 
-                FPR = pltfpr[curveidx,thresholdidx]
-                TPR = plttpr[curveidx,thresholdidx]
-                #Points in randomised threshold 
-                conf = self.calc_ConfusionMatrix(t1, t2, g, p1)
-                RandomFPR, RandomTPR = self.Point_with_randomised_thresholds(conf)
-                
-                if MakePlot: 
-                    for i,gr in enumerate(self.Groups): 
-                                   plt.plot(pltfpr[i,:], plttpr[i,:], label='%s ROC (area = %0.2f)' % (gr['groupname'], allauc[i]))
-                    plt.plot([0, 1], [0, 1], 'k--')
-                    plt.plot(FPR,TPR,'o', label = "Threshold = %s" %t)
-                    plt.plot(RFPR, RTPR, 'bo', label = "$t_1$=%s, $t_1$=%s,$p_1$=%s group = %s" %(t1, t2, p1, g))
-                    plt.xlim([0.0, 1.0])
-                    plt.ylim([0.0, 1.0])
-                    plt.xlabel('False Positive Rate')
-                    plt.ylabel('True Positive Rate')
-                    plt.legend(loc=0, fontsize='small')
-                    plt.show()
-
-                
-                return FPR, TPR, RandomFPR, RandomTPR
 
             
 DATA = equal("./data/compas-scores-two-years.csv", 'decile_score.1','two_year_recid', 'race',400)
-allthresholds, allfpr, alltpr, allauc, thresholds = DATA.ROC(False, True)
+#allthresholds, allfpr, alltpr, allauc, thresholds = DATA.ROC(False, True)
 #Compute fpr anf tpr on lowest ROC with threshold t: 
 
 
@@ -375,5 +251,8 @@ plt.plot(Cx,Cy, "o")
 #plt.plot(Cx[5],Cy[5], "o")
 plt.plot(Ax[5],Ay[5], "o")
 plt.plot(inter[0],inter[1],"o")
+
+DATA.calc_ConfusionMatrix(3, 4, 1, perc1)
+DATA.calc_ConfusionMatrix(0, 5, 0, perc2)
 
 plt.show()
