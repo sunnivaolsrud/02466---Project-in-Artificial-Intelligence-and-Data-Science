@@ -46,7 +46,7 @@ class dataprocess:
                 else: 
                     d.append(np.nan)
         
-        self.data.join(d)
+        self.data[name]=d
         return d
     
     def hotK(self, featurename): 
@@ -60,9 +60,11 @@ class dataprocess:
             hot.append(pd.get_dummies(self.data[featurename[i]]))
             
         self.data = self.data.drop(featurename, axis=1)
-        self.data = self.data.join(hot)
         
-        return 
+        for i in range(len(hot)):
+            self.data = pd.concat([self.data,hot[i]], axis=1, sort=False)
+        
+        return
     
   #  def as_numbers(self,attri):
    #     """
@@ -88,7 +90,7 @@ class dataprocess:
 twoyears = dataprocess("./data/compas-scores-two-years.csv")
 
 ## Compute legth of stay of compas-score prison time
-length  = twoyears.days_len("c_jail_in","c_jail_out",'c_len_of_stay')
+length  = twoyears.days_len("c_jail_in","c_jail_out","c_len_of_stay")
 
 ##Drop some columns
 keeplist = ['sex', 'age', 'age_cat', 'race', 'juv_fel_count', 
@@ -106,3 +108,5 @@ twoyears.hotK(klist)
 #remove nans
 twoyears.data = twoyears.data.dropna(axis = 0)
 
+
+    
