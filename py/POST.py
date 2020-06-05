@@ -252,7 +252,9 @@ plt.plot(Cx,Cy, "o")
 plt.plot(Ax[5],Ay[5], "o")
 plt.plot(inter[0],inter[1],"o")
 
-DATA.calc_ConfusionMatrix(3, 4, 1, perc1)
-DATA.calc_ConfusionMatrix(0, 5, 0, perc2)
+c1 = DATA.calc_ConfusionMatrix(4,3, 1, perc1)
+c2 = DATA.calc_ConfusionMatrix(10,5, 0, perc2)
 
+DATA.FP_TP_rate(c1)
+DATA.FP_TP_rate(c2)
 plt.show()
