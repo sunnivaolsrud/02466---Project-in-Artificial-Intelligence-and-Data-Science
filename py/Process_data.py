@@ -86,27 +86,29 @@ length  = twoyears.days_len("c_jail_in","c_jail_out","c_len_of_stay")
 ##Drop some columns
 keeplist = ['sex', 'age', 'age_cat', 'race', 'juv_fel_count', 
        'juv_misd_count', 'juv_other_count', 'priors_count', 'c_days_from_compas',
-       'c_charge_degree', 'r_charge_degree', 'vr_charge_degree',
+       'c_charge_degree', 'r_charge_degree', #'vr_charge_degree',
        'decile_score.1', 'score_text','two_year_recid', 'c_len_of_stay']
 
 twoyears.data = twoyears.data[keeplist]
 
 ## One hot K. One hot k encoded features are removed except "race". 
-klist = ['sex', 'age_cat', 'race', 'c_charge_degree', 'r_charge_degree', 'vr_charge_degree', 'score_text']
-remove = ['sex', 'age_cat', 'c_charge_degree', 'r_charge_degree', 'vr_charge_degree', 'score_text']
+klist = ['sex', 'age_cat', 'race', 'c_charge_degree', 'r_charge_degree',  'score_text'] #'vr_charge_degree'
+remove = ['sex', 'age_cat', 'c_charge_degree', 'r_charge_degree',  'score_text']#'vr_charge_degree'
 twoyears.hotK(klist, remove)
 
 
 #remove nans
 twoyears.data = twoyears.data.dropna(axis = 0)
 
-#Prepair data for POST step on compas data
+
+
+#%% Prepair data
+#Prepair data for POST step on compas data 
 A = twoyears.data["race"]
 ytrue = twoyears.data['two_year_recid']
 yhat = twoyears.data['decile_score.1']
 
 #Prepair data for models
-
 #Redefine labels (1: 6-10, 0: 1-5)
 twoyears.newlabels()
 
