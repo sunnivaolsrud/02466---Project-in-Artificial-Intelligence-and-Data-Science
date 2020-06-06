@@ -17,7 +17,9 @@ import matplotlib.pyplot as plt
 #Creat
 
 # Create the model with 100 trees
-model = RandomForestClassifier(n_estimators=100, 
+model = RandomForestClassifier(n_estimators=1000,
+                               criterion = 'entropy',
+                               min_samples_split=2,
                                bootstrap = True,
                                max_features = 'sqrt')
 
@@ -39,7 +41,9 @@ y_train, y_test = y[train_index], y[test_index]
 model.fit(X_train, y_train)
 
 #predict
+rf_predictions_train = model.predict(X_train)
 rf_predictions = model.predict(X_test)
+
 
 # Probabilities for score = 1
 yhat_rf = model.predict_proba(X_test)[:, 1]
@@ -47,7 +51,8 @@ yhat_rf = pd.DataFrame( yhat_rf)
 
 
 #acc
-np.sum(rf_predictions ==y_test)/len(y_test)
+print(np.sum(rf_predictions_train ==y_train)/len(y_train))
+print(np.sum(rf_predictions ==y_test)/len(y_test))
 #Define equal class variable 
 #ytrue = two-years-recidivism
 #yhat = predicted probability 
@@ -66,6 +71,9 @@ plt.plot(Fpr_rf['Caucasian'], Tpr_rf['Caucasian'], label = 'caucasian')
 plt.plot(Fpr_rf['African-American'], Tpr_rf['African-American'], label = 'african-american')
 plt.legend()
 plt.show()
+
+
+#POST
 
 
 
