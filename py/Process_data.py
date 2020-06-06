@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 from datetime import datetime
 date_format = "%Y-%m-%d"
+#from POST import *
 
 class dataprocess:
     
@@ -49,40 +50,30 @@ class dataprocess:
         self.data[name]=d
         return d
     
-    def hotK(self, featurename): 
+    def hotK(self, featurename, remove): 
         """
         featurename: Name of the feature for onehotK
         num: False by default. define as True if data is nummerical. 
         (classes needs to be sorted for nummerical data)
+        remove: features to be removed after performing one-hot coding
         """
         hot =[]
         for i in range(len(featurename)): 
             hot.append(pd.get_dummies(self.data[featurename[i]]))
-            
-        self.data = self.data.drop(featurename, axis=1)
+        
+        self.data = self.data.drop(remove, axis=1)
         
         for i in range(len(hot)):
             self.data = pd.concat([self.data,hot[i]], axis=1, sort=False)
         
         return
     
-  #  def as_numbers(self,attri):
-   #     """
-    #    input: Categorical attribute consisting of strings 
-     #   function: changes attribute to nummerical data in dataset
-      ## """
+    def newlabels(self):
+        
+        self.data["decile_score.1"] = self.data["decile_score.1"] >5
+        return  
+    
 
-        #group = self.data[attri].unique()
-     #   idx = [type(group[i]) for i in range(len(group))]
-      #  if [float in idx]:
-       #     group.remove(group[idx==float])
-        #dic = {}
-        #for i,j in enumerate(group):
-        #    dic[j] = i
-                
-       # self.data.replace(dic, inplace=True)
-           
-        #return dic
     
     
 
@@ -100,13 +91,27 @@ keeplist = ['sex', 'age', 'age_cat', 'race', 'juv_fel_count',
 
 twoyears.data = twoyears.data[keeplist]
 
-## One hot K 
+## One hot K. One hot k encoded features are removed except "race". 
 klist = ['sex', 'age_cat', 'race', 'c_charge_degree', 'r_charge_degree', 'vr_charge_degree', 'score_text']
-twoyears.hotK(klist)
+remove = ['sex', 'age_cat', 'c_charge_degree', 'r_charge_degree', 'vr_charge_degree', 'score_text']
+twoyears.hotK(klist, remove)
 
 
 #remove nans
 twoyears.data = twoyears.data.dropna(axis = 0)
+
+#Prepair data for POST step on compas data
+A = twoyears.data["race"]
+ytrue = twoyears.data['two_year_recid']
+yhat = twoyears.data['decile_score.1']
+
+#Prepair data for models
+
+#Redefine labels (1: 6-10, 0: 1-5)
+twoyears.newlabels()
+
+#twoyears.data now has all the attributes needed to run model
+twoyears.data = twoyears.data.drop(['race', 'two_year_recid'], axis = 1)
 
 
     

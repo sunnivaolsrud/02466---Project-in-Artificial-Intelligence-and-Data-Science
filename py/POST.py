@@ -13,22 +13,23 @@ import matplotlib as plt
 import matplotlib.pyplot as plt
 import collections
 ConfusionMatrix = collections.namedtuple('conf', ['tp','fp','tn','fn']) 
+from Process_data import A, ytrue, yhat
 
 
 class equal:
-    def __init__(self,data_path, yhatName, ytrueName, AName, N):
+    def __init__(self,A, yhat, ytrue, N=400):
         """ data_path: path to csv file
             yhatName: Name of attribute containing yhat
             ytrueName: Name of attribute containing ytrue
             AName: Name of protected attribute
             N: Read describtion of "Groups" below
         """
-        data = pd.read_csv(data_path)
-        self.data = data
-        Y = self.data[[yhatName, ytrueName]].to_numpy(dtype=float)
-        self.A = self.data[AName].to_numpy()
-        self.Yhat = Y[:,0]
-        self.Ytrue = Y[:,1]
+        
+        #self.data = data
+        #Y = self.data[[yhatName, ytrueName]].to_numpy(dtype=float)
+        self.A = A.to_numpy()
+        self.Yhat = yhat
+        self.Ytrue = ytrue
         
         #Groups: List with dictionaries. Each group of A, where number of observations > N has a dictionary
         #Each dictionary has 3 keys: ytrue, yhat and A
@@ -162,10 +163,11 @@ class equal:
             accs.append(k)
         return accs
 
+#pandas.core.series.Series
 
-
-            
-DATA = equal("./data/compas-scores-two-years.csv", 'decile_score.1','two_year_recid', 'race',400)
+#Name: decile_score.1, Length: 6907, dtype: int64
+       
+DATA = equal(A, yhat, ytrue)
 #allthresholds, allfpr, alltpr, allauc, thresholds = DATA.ROC(False, True)
 #Compute fpr anf tpr on lowest ROC with threshold t: 
 
