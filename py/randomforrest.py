@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 #Creat
 
 # Create the model with 100 trees
-model = RandomForestClassifier(n_estimators=1000, 
+model = RandomForestClassifier(n_estimators=100, 
                                bootstrap = True,
                                max_features = 'sqrt')
 
@@ -25,7 +25,7 @@ model = RandomForestClassifier(n_estimators=1000,
 
 #Define X and y
 y = twoyears.data['decile_score.1'].values
-X = twoyears.data.values
+X = twoyears.data.drop(['decile_score.1'],axis = 1).values
 
 #split dataset 
 split = ShuffleSplit(n_splits=1, test_size=0.2)
@@ -39,13 +39,15 @@ y_train, y_test = y[train_index], y[test_index]
 model.fit(X_train, y_train)
 
 #predict
-#rf_predictions = model.predict(X_test)
+rf_predictions = model.predict(X_test)
 
 # Probabilities for score = 1
 yhat_rf = model.predict_proba(X_test)[:, 1]
 yhat_rf = pd.DataFrame( yhat_rf)
 
 
+#acc
+np.sum(rf_predictions ==y_test)/len(y_test)
 #Define equal class variable 
 #ytrue = two-years-recidivism
 #yhat = predicted probability 
@@ -60,8 +62,9 @@ Equal_rf = equal(A[0], yhat_rf[0], ytrue[0])
 T = np.arange(0,1.1,0.001)
 Fpr_rf, Tpr_rf= Equal_rf.ROC_(T)
 
-plt.plot(Fpr_rf['Caucasian'], Tpr_rf['Caucasian'])
-plt.plot(Fpr_rf['African-American'], Tpr_rf['African-American'])
+plt.plot(Fpr_rf['Caucasian'], Tpr_rf['Caucasian'], label = 'caucasian')
+plt.plot(Fpr_rf['African-American'], Tpr_rf['African-American'], label = 'african-american')
+plt.legend()
 plt.show()
 
 

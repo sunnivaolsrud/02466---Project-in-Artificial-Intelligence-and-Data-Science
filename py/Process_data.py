@@ -75,7 +75,6 @@ class dataprocess:
     
 
     
-    
 
 ##define class variabel
 twoyears = dataprocess("./data/compas-scores-two-years.csv")
