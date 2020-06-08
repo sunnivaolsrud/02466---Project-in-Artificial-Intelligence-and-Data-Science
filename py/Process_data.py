@@ -84,7 +84,7 @@ length  = twoyears.days_len("c_jail_in","c_jail_out","c_len_of_stay")
 
 ##Drop some columns
 keeplist = ['sex', 'age', 'age_cat', 'race', 'juv_fel_count', 
-       'juv_misd_count', 'juv_other_count', 'priors_count', 'c_days_from_compas',
+       'juv_misd_count', 'juv_other_count', 'priors_count', #'c_days_from_compas',
        'c_charge_degree', 'r_charge_degree', #'vr_charge_degree',
        'decile_score.1','two_year_recid', 'c_len_of_stay']
 
@@ -114,5 +114,5 @@ twoyears.newlabels()
 #twoyears.data now has all the attributes needed to run model
 twoyears.data = twoyears.data.drop(['race', 'two_year_recid'], axis = 1)
 
-
+#hej = pd.read_csv("./data/compas-scores-two-years.csv")
     
