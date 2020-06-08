@@ -170,20 +170,38 @@ class equal:
 
         accs = []
 
-        for idx,R in enumerate(self.Race):
+        for idx,R in enumerate(self.Race, models):
             k = []
-            for thres in T:
-                conf_mtrx = self.conf_(thres, idx)
-                tp = conf_mtrx[0]
-                fp = conf_mtrx[1]
-                tn = conf_mtrx[2]
-                fn = conf_mtrx[3]   
+            
+            
+            if models: 
+                for thres in T:
+                    conf_mtrx = self.conf_models(thres, idx)
+                    tp = conf_mtrx[0]
+                    fp = conf_mtrx[1]
+                    tn = conf_mtrx[2]
+                    fn = conf_mtrx[3]   
+    
+                    acc = (tn+tp)/(tn+fp+fn+tp)
+    
+                    k.append(acc)
+                accs.append(k)
+                 
+            else:
+                for thres in T:
+                    conf_mtrx = self.conf_models(thres, idx)
+                    tp = conf_mtrx[0]
+                    fp = conf_mtrx[1]
+                    tn = conf_mtrx[2]
+                    fn = conf_mtrx[3]   
+    
+                    acc = (tn+tp)/(tn+fp+fn+tp)
+    
+                    k.append(acc)
+                accs.append(k)
+                
 
-                acc = (tn+tp)/(tn+fp+fn+tp)
-
-                k.append(acc)
-
-            accs.append(k)
+            
         return accs
 
 #pandas.core.series.Series
