@@ -67,7 +67,7 @@ Equal_rf = equal(A[0], yhat_rf[0], ytrue[0])
 
 #ROC 
 T = np.arange(0,1.1,0.001)
-Fpr_rf, Tpr_rf= Equal_rf.ROC_(T)
+Fpr_rf, Tpr_rf= Equal_rf.ROC_(T, models = True)
 
 Fpr_cau, Tpr_cau = Fpr_rf['Caucasian'], Tpr_rf['Caucasian']
 
@@ -132,5 +132,5 @@ Equal_rf.FP_TP_rate(preconf_cau)
 postconf_afri = Equal_rf.calc_ConfusionMatrix(T[k], maxt_afri, 0,perc_afri)
 postconf_cau =  Equal_rf.calc_ConfusionMatrix(maxt_cau,T[j], 1,perc_cau)
 
-Equal_rf.FP_TP_rate(postconf_afri)
-Equal_rf.FP_TP_rate(postconf_cau)
+print(Equal_rf.FP_TP_rate(postconf_afri))
+print(Equal_rf.FP_TP_rate(postconf_cau))

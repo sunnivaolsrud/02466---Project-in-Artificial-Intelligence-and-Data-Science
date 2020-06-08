@@ -92,6 +92,24 @@ class equal:
         bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
         tp=fp=tn=fn=0
         for truth, score in zip(bool_actuals,self.Groups[g]['yhat']):
+            if score < t:
+                if truth:                              # actually positive 
+                    tp += 1
+                else:                                  # actually negative              
+                    fp += 1
+                
+            else:
+                if not truth:                          # actually negative 
+                    tn += 1                          
+                else:                                  # actually positive 
+                    fn += 1
+    
+        return ConfusionMatrix(tp, fp, tn, fn)
+
+    def conf_models(self,t, g, positive_label=1):
+        bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
+        tp=fp=tn=fn=0
+        for truth, score in zip(bool_actuals,self.Groups[g]['yhat']):
             if score > t:
                 if truth:                              # actually positive 
                     tp += 1
@@ -105,7 +123,8 @@ class equal:
                     fn += 1
     
         return ConfusionMatrix(tp, fp, tn, fn)
-                  
+
+
     
     def FP_TP_rate(self,conf_mtrx):
         RFPR = conf_mtrx.fp / (conf_mtrx.fp + conf_mtrx.tn) if (conf_mtrx.fp + conf_mtrx.tn)!=0 else 0
@@ -113,7 +132,7 @@ class equal:
         return RFPR, RTPR
     
     
-    def ROC_(self,T,makeplot=True, GetAllOutput=False):
+    def ROC_(self,T, models, makeplot=True, GetAllOutput=False):
         """
         Allthresholds: list of all thresholds of ROC curve. 
         For A=a , allthresholds[i] is the thresholds used to compute (allfpr[i],alltpr[i])
@@ -126,7 +145,11 @@ class equal:
         for idx,R in enumerate(self.Race): 
             fprl, tprl = [], []
             for thres in T: 
-                conf_mtrx = self.conf_(thres, idx)
+                if models:    
+                    conf_mtrx = self.conf_models(thres, idx)
+                    
+                else: 
+                    conf_mtrx = self.conf_(thres, idx)
                 RFPR, RTPR = self.FP_TP_rate(conf_mtrx)
                 RFPR = [RFPR]
                 RTPR = [RTPR]
@@ -181,13 +204,11 @@ t = 5
 #Compute fpr and tpr for the predictor for group g, with the above mentioned thresholds and prob
 #gfpr, gtpr = DATA.Point_with_randomised_thresholds(conf)
 
-T = np.arange(0,10,0.1)
-hej, hej1 = DATA.ROC_(T)
 
 ##Kode fra https://www.daniweb.com/programming/computer-science/tutorials/520084/understanding-roc-curves-from-scratch
 
 
-TP1, FP1 = DATA.ROC_([0,1,2,3,4,5,6,7,8,9,10])
+TP1, FP1 = DATA.ROC_([0,1,2,3,4,5,6,7,8,9,10], models = False)
 
 Ax = TP1['African-American']
 Ay = FP1['African-American']
