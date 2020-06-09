@@ -159,9 +159,20 @@ class equal:
             ALLtpr[R] = tprl
         
         return ALLfpr, ALLtpr
+    
+    def acc_with_conf(self, conf_mtrx):
+        
+        tp = conf_mtrx[0]
+        fp = conf_mtrx[1]
+        tn = conf_mtrx[2]
+        fn = conf_mtrx[3]   
+
+        acc=(tn+tp)/(tn+fp+fn+tp)
+        
+        return acc
 
 
-    def acc_(self,T,makeplot=True, GetAllOutput=False):
+    def acc_(self,T,models,makeplot=True, GetAllOutput=False):
         """
         T: list of thresholds 
         Computes accuracies given lidt of thresholds
@@ -170,13 +181,13 @@ class equal:
 
         accs = []
 
-        for idx,R in enumerate(self.Race, models):
+        for idx,R in enumerate(self.Race):
             k = []
             
             
             if models: 
                 for thres in T:
-                    conf_mtrx = self.conf_models(thres, idx)
+                    conf_mtrx = self.conf_models(thres, idx, models)
                     tp = conf_mtrx[0]
                     fp = conf_mtrx[1]
                     tn = conf_mtrx[2]
@@ -189,7 +200,7 @@ class equal:
                  
             else:
                 for thres in T:
-                    conf_mtrx = self.conf_models(thres, idx)
+                    conf_mtrx = self.conf_(thres, idx)
                     tp = conf_mtrx[0]
                     fp = conf_mtrx[1]
                     tn = conf_mtrx[2]
@@ -234,7 +245,7 @@ Ay = FP1['African-American']
 Cx = TP1['Caucasian']
 Cy = FP1['Caucasian']
 
-accs = DATA.acc_(np.arange(0,11))
+accs = DATA.acc_(np.arange(0,11), models = False)
 
 max_accs = [np.argmax(accs[0]), np.argmax(accs[1])]
 
