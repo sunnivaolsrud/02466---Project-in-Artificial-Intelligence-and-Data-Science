@@ -63,10 +63,10 @@ A = A.values[test_index]
 A = pd.DataFrame(A)
 ytrue = ytrue.values[test_index]
 ytrue = pd.DataFrame(ytrue)
-Equal_rf = equal(A[0], yhat_rf[0], ytrue[0])
+Equal_rf = equal(A[0], yhat_rf[0], ytrue[0], N=400)
 
 #ROC 
-T = np.arange(0,1.001,0.01)
+T = np.arange(0,1.001,0.001)
 Fpr_rf, Tpr_rf= Equal_rf.ROC_(T, models = True)
 
 Fpr_cau, Tpr_cau = Fpr_rf['Caucasian'], Tpr_rf['Caucasian']
@@ -83,8 +83,9 @@ plt.show()
 #accuracies of ROC curve
 accs_rf = Equal_rf.acc_(T, models = True)
 
-#race idx
-idx = 0
+#race (Lowest ROC)
+idx = 'African-American'
+
 
 #choose (0,0) or (1,1)
 p0 = [0,0]
@@ -151,28 +152,10 @@ t_cau2 = T[minidx]
 
 
 
-#Compute lines between points
-##l_afri = line([Fpr_afri[k],Tpr_afri[k]],maxp_afri)
-#l_cau = line(maxp_cau,[Fpr_cau[j], Tpr_cau[j]])
-
-#Compute intersection between lines
-#inter = intersection(l_afri, l_cau)
-
-#compute percentage
-#perc_afri = percentile([Fpr_afri[k], Tpr_afri[k]],[inter[0], inter[1]],maxp_afri)
-#perc_cau = percentile(maxp_cau,[inter[0], inter[1]],[Fpr_cau[j], Tpr_cau[j]])
-
-#confmatrix and acc before 
-#preconf_afri = Equal_rf.conf_(0.5,0)
-#preconf_cau = Equal_rf.conf_(0.5,1)
-#preaccu = Equal_rf.acc_([0.5])
-#Equal_rf.FP_TP_rate(preconf_afri)
-#Equal_rf.FP_TP_rate(preconf_cau)
-
 
 #conf matrix and acc after
 postconf_afri =  Equal_rf.conf_models(t_afri,0)
-postconf_cau = Equal_rf.calc_ConfusionMatrix(t_cau2, t_cau1, 1,percent)
+postconf_cau = Equal_rf.calc_ConfusionMatrix(t_cau1,t_cau2, 1,percent)
 
 
 print(Equal_rf.FP_TP_rate(postconf_afri))

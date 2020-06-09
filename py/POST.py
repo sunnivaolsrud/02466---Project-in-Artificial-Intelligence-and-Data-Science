@@ -17,7 +17,7 @@ from Process_data import A, ytrue, yhat
 
 
 class equal:
-    def __init__(self,A, yhat, ytrue, N=400):
+    def __init__(self,A, yhat, ytrue, N):
         """ data_path: path to csv file
             yhatName: Name of attribute containing yhat
             ytrueName: Name of attribute containing ytrue
@@ -58,6 +58,10 @@ class equal:
         "t1 and t2": thresholds
         
         """
+        if t1 < t2: 
+            l = [1,0]
+        elif t1 > t2: 
+            l = [0,1]
         tp=fp=tn=fn=0
         bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
         for truth, score in zip(bool_actuals,self.Groups[g]['yhat']):  
@@ -74,7 +78,7 @@ class equal:
                     fn += 1
                 
             elif score>=t1 and score<=t2: 
-                mid = np.random.choice([0,1], p = [1-p2,p2])
+                mid = np.random.choice(l, p = [1-p2,p2])
                 if mid: 
                     if truth: 
                         tp+=1
@@ -179,37 +183,33 @@ class equal:
         accs: accuracies given list of thresholds
         """
 
-        accs = []
-
-        for idx,R in enumerate(self.Race):
-            k = []
+        accs = {}
+        if models:
             
-            
-            if models: 
+            for idx,R in enumerate(self.Race):
+                k = []
                 for thres in T:
-                    conf_mtrx = self.conf_models(thres, idx, models)
+                    conf_mtrx = self.conf_models(thres, idx)
                     tp = conf_mtrx[0]
                     fp = conf_mtrx[1]
                     tn = conf_mtrx[2]
-                    fn = conf_mtrx[3]   
-    
+                    fn = conf_mtrx[3]  
                     acc = (tn+tp)/(tn+fp+fn+tp)
-    
                     k.append(acc)
-                accs.append(k)
+                accs[R] = k
                  
-            else:
+        else:
+            for idx,R in enumerate(self.Race):
+                k = []   
                 for thres in T:
                     conf_mtrx = self.conf_(thres, idx)
                     tp = conf_mtrx[0]
                     fp = conf_mtrx[1]
                     tn = conf_mtrx[2]
                     fn = conf_mtrx[3]   
-    
                     acc = (tn+tp)/(tn+fp+fn+tp)
-    
                     k.append(acc)
-                accs.append(k)
+                accs[R] = k
                 
 
             
@@ -219,7 +219,7 @@ class equal:
 
 #Name: decile_score.1, Length: 6907, dtype: int64
        
-DATA = equal(A, yhat, ytrue)
+DATA = equal(A, yhat, ytrue, N=600)
 #allthresholds, allfpr, alltpr, allauc, thresholds = DATA.ROC(False, True)
 #Compute fpr anf tpr on lowest ROC with threshold t: 
 
@@ -247,7 +247,7 @@ Cy = FP1['Caucasian']
 
 accs = DATA.acc_(np.arange(0,11), models = False)
 
-max_accs = [np.argmax(accs[0]), np.argmax(accs[1])]
+max_accs = [np.argmax(accs['African-American']), np.argmax(accs['Caucasian'])]
 
 
 # Test fra stack overflow, vi skal have skrevet vores egen, hvis det er worth
