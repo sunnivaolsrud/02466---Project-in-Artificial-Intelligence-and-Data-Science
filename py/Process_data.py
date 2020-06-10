@@ -116,3 +116,16 @@ twoyears.data = twoyears.data.drop(['race', 'two_year_recid'], axis = 1)
 
 #hej = pd.read_csv("./data/compas-scores-two-years.csv")
 twoyears.data["decile_score.1"] = twoyears.data["decile_score.1"] <= 5   
+
+
+
+#Define X and y
+y = twoyears.data['decile_score.1'].values
+X = twoyears.data.drop(['decile_score.1'],axis = 1).values
+
+#split dataset 
+split = ShuffleSplit(n_splits=1, test_size=0.2)
+split.get_n_splits(X, y)
+train_index, test_index = next(split.split(X, y)) 
+X_train, X_test = X[train_index], X[test_index] 
+y_train, y_test = y[train_index], y[test_index]
