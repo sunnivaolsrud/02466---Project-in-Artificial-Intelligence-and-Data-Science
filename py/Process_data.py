@@ -70,7 +70,7 @@ class dataprocess:
     
     def newlabels(self):
         
-        self.data["decile_score.1"] = self.data["decile_score.1"] >5
+        self.data["decile_score.1"] = self.data["decile_score.1"] > 5
         return  
     
 
@@ -104,15 +104,15 @@ twoyears.data = twoyears.data.dropna(axis = 0)
 #%% Prepair data
 #Prepair data for POST step on compas data 
 A = twoyears.data["race"]
-ytrue = twoyears.data['two_year_recid']
+ytrue = twoyears.data['two_year_recid'] == False
 yhat = twoyears.data['decile_score.1']
 
 #Prepair data for models
 #Redefine labels (1: 6-10, 0: 1-5)
-twoyears.newlabels()
+#twoyears.newlabels()
 
 #twoyears.data now has all the attributes needed to run model
 twoyears.data = twoyears.data.drop(['race', 'two_year_recid'], axis = 1)
 
 #hej = pd.read_csv("./data/compas-scores-two-years.csv")
-    
+twoyears.data["decile_score.1"] = twoyears.data["decile_score.1"] <= 5   

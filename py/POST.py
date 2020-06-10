@@ -17,7 +17,7 @@ from Process_data import A, ytrue, yhat
 
 
 class equal:
-    def __init__(self,A, yhat, ytrue, N=400):
+    def __init__(self,A, yhat, ytrue, N):
         """ data_path: path to csv file
             yhatName: Name of attribute containing yhat
             ytrueName: Name of attribute containing ytrue
@@ -58,6 +58,10 @@ class equal:
         "t1 and t2": thresholds
         
         """
+        if t1 < t2: 
+            l = [1,0]
+        elif t1 > t2: 
+            l = [0,1]
         tp=fp=tn=fn=0
         bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
         for truth, score in zip(bool_actuals,self.Groups[g]['yhat']):  
@@ -74,7 +78,7 @@ class equal:
                     fn += 1
                 
             elif score>=t1 and score<=t2: 
-                mid = np.random.choice([0,1], p = [1-p2,p2])
+                mid = np.random.choice(l, p = [1-p2,p2])
                 if mid: 
                     if truth: 
                         tp+=1
@@ -92,6 +96,24 @@ class equal:
         bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
         tp=fp=tn=fn=0
         for truth, score in zip(bool_actuals,self.Groups[g]['yhat']):
+            if score < t:
+                if truth:                              # actually positive 
+                    tp += 1
+                else:                                  # actually negative              
+                    fp += 1
+                
+            else:
+                if not truth:                          # actually negative 
+                    tn += 1                          
+                else:                                  # actually positive 
+                    fn += 1
+    
+        return ConfusionMatrix(tp, fp, tn, fn)
+
+    def conf_models(self,t, g, positive_label=1):
+        bool_actuals = [act==positive_label for act in self.Groups[g]['ytrue']]
+        tp=fp=tn=fn=0
+        for truth, score in zip(bool_actuals,self.Groups[g]['yhat']):
             if score > t:
                 if truth:                              # actually positive 
                     tp += 1
@@ -105,7 +127,8 @@ class equal:
                     fn += 1
     
         return ConfusionMatrix(tp, fp, tn, fn)
-                  
+
+
     
     def FP_TP_rate(self,conf_mtrx):
         RFPR = conf_mtrx.fp / (conf_mtrx.fp + conf_mtrx.tn) if (conf_mtrx.fp + conf_mtrx.tn)!=0 else 0
@@ -113,7 +136,7 @@ class equal:
         return RFPR, RTPR
     
     
-    def ROC_(self,T,makeplot=True, GetAllOutput=False):
+    def ROC_(self,T, models, makeplot=True, GetAllOutput=False):
         """
         Allthresholds: list of all thresholds of ROC curve. 
         For A=a , allthresholds[i] is the thresholds used to compute (allfpr[i],alltpr[i])
@@ -126,7 +149,11 @@ class equal:
         for idx,R in enumerate(self.Race): 
             fprl, tprl = [], []
             for thres in T: 
-                conf_mtrx = self.conf_(thres, idx)
+                if models:    
+                    conf_mtrx = self.conf_models(thres, idx)
+                    
+                else: 
+                    conf_mtrx = self.conf_(thres, idx)
                 RFPR, RTPR = self.FP_TP_rate(conf_mtrx)
                 RFPR = [RFPR]
                 RTPR = [RTPR]
@@ -136,38 +163,63 @@ class equal:
             ALLtpr[R] = tprl
         
         return ALLfpr, ALLtpr
+    
+    def acc_with_conf(self, conf_mtrx):
+        
+        tp = conf_mtrx[0]
+        fp = conf_mtrx[1]
+        tn = conf_mtrx[2]
+        fn = conf_mtrx[3]   
+
+        acc=(tn+tp)/(tn+fp+fn+tp)
+        
+        return acc
 
 
-    def acc_(self,T,makeplot=True, GetAllOutput=False):
+    def acc_(self,T,models,makeplot=True, GetAllOutput=False):
         """
         T: list of thresholds 
         Computes accuracies given lidt of thresholds
         accs: accuracies given list of thresholds
         """
 
-        accs = []
+        accs = {}
+        if models:
+            
+            for idx,R in enumerate(self.Race):
+                k = []
+                for thres in T:
+                    conf_mtrx = self.conf_models(thres, idx)
+                    tp = conf_mtrx[0]
+                    fp = conf_mtrx[1]
+                    tn = conf_mtrx[2]
+                    fn = conf_mtrx[3]  
+                    acc = (tn+tp)/(tn+fp+fn+tp)
+                    k.append(acc)
+                accs[R] = k
+                 
+        else:
+            for idx,R in enumerate(self.Race):
+                k = []   
+                for thres in T:
+                    conf_mtrx = self.conf_(thres, idx)
+                    tp = conf_mtrx[0]
+                    fp = conf_mtrx[1]
+                    tn = conf_mtrx[2]
+                    fn = conf_mtrx[3]   
+                    acc = (tn+tp)/(tn+fp+fn+tp)
+                    k.append(acc)
+                accs[R] = k
+                
 
-        for idx,R in enumerate(self.Race):
-            k = []
-            for thres in T:
-                conf_mtrx = self.conf_(thres, idx)
-                tp = conf_mtrx[0]
-                fp = conf_mtrx[1]
-                tn = conf_mtrx[2]
-                fn = conf_mtrx[3]   
-
-                acc = (tn+tp)/(tn+fp+fn+tp)
-
-                k.append(acc)
-
-            accs.append(k)
+            
         return accs
 
 #pandas.core.series.Series
 
 #Name: decile_score.1, Length: 6907, dtype: int64
        
-DATA = equal(A, yhat, ytrue)
+DATA = equal(A, yhat, ytrue, N=600)
 #allthresholds, allfpr, alltpr, allauc, thresholds = DATA.ROC(False, True)
 #Compute fpr anf tpr on lowest ROC with threshold t: 
 
@@ -181,13 +233,11 @@ t = 5
 #Compute fpr and tpr for the predictor for group g, with the above mentioned thresholds and prob
 #gfpr, gtpr = DATA.Point_with_randomised_thresholds(conf)
 
-T = np.arange(0,10,0.1)
-hej, hej1 = DATA.ROC_(T)
 
 ##Kode fra https://www.daniweb.com/programming/computer-science/tutorials/520084/understanding-roc-curves-from-scratch
 
 
-TP1, FP1 = DATA.ROC_([0,1,2,3,4,5,6,7,8,9,10])
+TP1, FP1 = DATA.ROC_([0,1,2,3,4,5,6,7,8,9,10], models = False)
 
 Ax = TP1['African-American']
 Ay = FP1['African-American']
@@ -195,9 +245,9 @@ Ay = FP1['African-American']
 Cx = TP1['Caucasian']
 Cy = FP1['Caucasian']
 
-accs = DATA.acc_(np.arange(0,11))
+accs = DATA.acc_(np.arange(0,11), models = False)
 
-max_accs = [np.argmax(accs[0]), np.argmax(accs[1])]
+max_accs = [np.argmax(accs['African-American']), np.argmax(accs['Caucasian'])]
 
 
 # Test fra stack overflow, vi skal have skrevet vores egen, hvis det er worth
