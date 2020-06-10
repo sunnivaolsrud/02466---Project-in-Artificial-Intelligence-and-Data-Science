@@ -13,7 +13,7 @@ date_format = "%Y-%m-%d"
 #from POST import *
 from sklearn.model_selection import ShuffleSplit
 
-
+np.random.seed(217)
 
 class dataprocess:
     
