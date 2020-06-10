@@ -11,6 +11,9 @@ from sklearn.preprocessing import OneHotEncoder
 from datetime import datetime
 date_format = "%Y-%m-%d"
 #from POST import *
+from sklearn.model_selection import ShuffleSplit
+
+
 
 class dataprocess:
     
