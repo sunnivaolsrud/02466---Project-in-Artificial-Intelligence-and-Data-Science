@@ -13,9 +13,11 @@ import matplotlib.pyplot as plt
 from POST import equal
 from Process_data import A, ytrue, yhat
 
+from Process_data import X_train, y_train, X_test, y_test, train_index, test_index
 
-np.random.seed(1)
+np.random.seed(21)
 
+"""
 # Attributes
 X = twoyears.data.drop(['decile_score.1'],axis = 1).values
 
@@ -29,6 +31,7 @@ X_train = X[0:upper]
 X_test = X[upper:]
 y_train = y[0:upper]
 y_test = y[upper:]
+"""
 
 model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/First.h5")
 
@@ -57,16 +60,16 @@ print('Accuracy: %.2f' % (accuracy*100))
 
 def ROC_NN(A):
 
-       A = A.values[upper:]
+       A = A.values[test_index]
        A = pd.DataFrame(A)
 
        pred = model.predict(X_test)
 
-       equal_NN = equal(A[0],pred,y_test)
+       equal_NN = equal(A[0],pred,ytrue.values[test_index], N =400)
 
        T = np.arange(0,1.001,0.001)
 
-       FPR, TPR = equal_NN.ROC_(T)
+       FPR, TPR = equal_NN.ROC_(T, models = True)
 
        plt.plot(FPR['Caucasian'], TPR['Caucasian'], label = 'caucasian')
        plt.plot(FPR['African-American'], TPR['African-American'], label = 'african-american')
@@ -118,4 +121,4 @@ def Perm_NN():
        plt.yticks(y_pos,labels)
        plt.show()
 
-       return losses,accs
+       return losses, accs
