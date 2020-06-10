@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 #Creat
 np.random.seed(10)
 # Create the model with 100 trees
-model = RandomForestClassifier(n_estimators=100,
+model = RandomForestClassifier(n_estimators=1000,
                                criterion = 'entropy',
                                min_samples_split=2,
                                bootstrap = True,
@@ -162,3 +162,4 @@ print(Equal_rf.FP_TP_rate(postconf_afri))
 print(Equal_rf.FP_TP_rate(postconf_cau))
 
 print(Equal_rf.acc_with_conf(postconf_afri))
+print(Equal_rf.acc_with_conf(postconf_cau))
