@@ -30,13 +30,13 @@ X_test = X[upper:]
 y_train = y[0:upper]
 y_test = y[upper:]
 
-#model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/First.h5")
+model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/First.h5")
 
 def train_NN(n_epoch):
        model = Sequential()
        model.add(Dense(29, activation='relu'))
        model.add(Dense(32, activation='relu'))
-       model.add(Dropout(0.2, input_shape=(30,)))
+       model.add(Dropout(0.2))
        model.add(Dense(16, activation='relu'))
        model.add(Dense(1, activation='sigmoid'))
 
@@ -48,7 +48,7 @@ def train_NN(n_epoch):
        
        return model
 
-model = train_NN(150)
+#model = train_NN(150)
 
 _, accuracy = model.evaluate(X_test, y_test)
 
