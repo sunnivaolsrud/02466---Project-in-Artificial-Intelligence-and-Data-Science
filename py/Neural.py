@@ -33,7 +33,7 @@ y_train = y[0:upper]
 y_test = y[upper:]
 """
 
-model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/First.h5")
+model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/NN_model.h5")
 
 def train_NN(n_epoch):
        model = Sequential()
@@ -47,7 +47,7 @@ def train_NN(n_epoch):
 
        model.fit(X_train, y_train, epochs=n_epoch, batch_size=10)
 
-       model.save("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/First.h5")
+       model.save("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/NN_model.h5")
        
        return model
 
