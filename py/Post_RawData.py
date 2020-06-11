@@ -53,9 +53,8 @@ def intersection(L1, L2):
 def percentile(p1,p2,p3):
     l1 = np.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2)
     l2 = np.sqrt((p1[0]-p3[0])**2+(p1[1]-p3[1])**2)
-
-    return l1/l2
-
+    return l1/(l2+0.000000001)
+"""
 l1 = line([Cx[4],Cx[4]],[Cx[3],Cy[3]])
 l2 = line([0,0],[Ax[5],Ay[5]])
 
@@ -83,3 +82,4 @@ c2 = DATA.calc_ConfusionMatrix(10,5, 0, perc2)
 DATA.FP_TP_rate(c1)
 DATA.FP_TP_rate(c2)
 plt.show()
+"""

@@ -197,5 +197,3 @@ plot_conf(conf_before_A)
 plot_conf(conf_after_C)
 plot_conf(conf_after_A)
 
-
-#

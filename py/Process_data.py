@@ -132,3 +132,6 @@ split.get_n_splits(X, y)
 train_index, test_index = next(split.split(X, y)) 
 X_train, X_test = X[train_index], X[test_index] 
 y_train, y_test = y[train_index], y[test_index]
+
+labels = twoyears.data.drop(["decile_score.1"],axis =1)
+labels = labels.columns.values
