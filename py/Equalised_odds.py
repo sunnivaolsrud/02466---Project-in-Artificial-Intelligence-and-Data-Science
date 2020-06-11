@@ -24,7 +24,10 @@ def estimate(x,y):
     b1 = y[1]-a1*x[1]      
     return a1, b1
 
-
+#CLVar = equal_NN
+#group = 'African-American'
+#p0 = [1,1] 
+#T = np.arange(0,1.001,0.001)
 def equal_odds(T, CLVar, group, p0, plot = False): 
     """
     Compute FPR and TPR of both groups of protected attribute (in given class)
@@ -94,10 +97,9 @@ def equal_odds(T, CLVar, group, p0, plot = False):
     postconf_afri =  CLVar.conf_models(t_afri,0)
     postconf_cau = CLVar.calc_ConfusionMatrix(t_cau1,t_cau2, 1,percent)
     
-    conf = [postconf_afri,postconf_cau ]
+    conf = [postconf_afri,postconf_cau]
 
-    FP_TP_rate_A = CLVar.FP_TP_rate(postconf_afri)
-    FP_TP_rate_C = CLVar.FP_TP_rate(postconf_cau)
+    FPR_TPR_odd= [CLVar.FP_TP_rate(postconf_afri),CLVar.FP_TP_rate(postconf_cau)]
     
     ACC_A = CLVar.acc_with_conf(postconf_afri)
     ACC_C = CLVar.acc_with_conf(postconf_cau)
@@ -116,5 +118,10 @@ def equal_odds(T, CLVar, group, p0, plot = False):
         plt.plot([p0[0],p1[0]], [p0[1], p1[1]], 'r')
         plt.legend()
         plt.show()
-        
-    return FP_TP_rate_A, FP_TP_rate_C, ACC, conf
+     
+    tA = t_afri
+    tC = [t_cau1, t_cau2]
+    return FPR_TPR_odd, ACC, conf, tA, tC
+
+
+

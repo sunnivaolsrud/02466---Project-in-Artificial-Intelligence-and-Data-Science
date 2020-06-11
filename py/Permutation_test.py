@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.utils import resample
-#from Process_data import X_train, y_train, X_test, y_test, train_index, test_index, labels
+from Process_data import X_train, y_train, X_test, y_test, train_index, test_index, labels
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 import pickle

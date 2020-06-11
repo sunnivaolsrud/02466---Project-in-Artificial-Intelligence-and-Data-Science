@@ -38,7 +38,9 @@ def train_test_RF(model, X_train, y_train, X_test, y_test, train = True):
     return train_acc, test_acc, yhat_rf
     
 #%%
+#Uncomment to train model 
     
+"""
 # Define random forrest model
 model = RandomForestClassifier(n_estimators=100,
                                criterion = 'entropy',
@@ -47,9 +49,11 @@ model = RandomForestClassifier(n_estimators=100,
                                max_features = None)
 
 
+
+
 #Import variables from other scripts
 from Process_data import A, ytrue, yhat
-from Process_data import y_train, y_test, X_train, X_test, train_index, test_index
+#from Process_data import y_train, y_test, X_train, X_test, train_index, test_index
 
 #train and test model
 train_acc, test_acc, yhat_rf = train_test_RF(model, X_train, y_train, X_test, y_test)
@@ -59,6 +63,7 @@ train_acc, test_acc, yhat_rf = train_test_RF(model, X_train, y_train, X_test, y_
 #save model
 filename = 'RF.sav'
 pickle.dump(model, open(filename, 'wb'))
+"""
 
 
 

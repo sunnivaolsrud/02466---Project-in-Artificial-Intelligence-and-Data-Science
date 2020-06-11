@@ -100,10 +100,8 @@ def equal_opportunity(sigma, T, CLVar, plot = False):
     #maximum accuracy of pairs
     maxw = np.argmax(weighted_acc)
     max_acc = weighted_acc[maxw]
-    maxtA = T_Anew[maxw]
-    maxtC = T_Cnew[maxw]
-    rateA = pairsA[maxw]
-    rateC = pairsC[maxw]
+    maxt = [T_Anew[maxw], T_Cnew[maxw]]
+    rate = [pairsA[maxw], pairsC[maxw]]
     
     #Conf mtrx before 
     conf_before_A = CLVar.conf_models(0.5, 0)
@@ -111,8 +109,8 @@ def equal_opportunity(sigma, T, CLVar, plot = False):
     conf_before = [conf_before_A,conf_before_C]
     
     #conf mtrx after
-    conf_after_A = CLVar.conf_models(maxtA, 0)
-    conf_after_C = CLVar.conf_models(maxtC, 1)
+    conf_after_A = CLVar.conf_models(maxt[0], 0)
+    conf_after_C = CLVar.conf_models(maxt[1], 1)
     conf_after = [conf_after_A,conf_after_C]
     
     #acc 
@@ -128,13 +126,13 @@ def equal_opportunity(sigma, T, CLVar, plot = False):
         #plot with max accu point
         plt.plot(FPR_C, TPR_C1,'g', label = 'Caucasian')
         plt.plot(FPR_A, TPR_A1,'b', label = 'African-american')
-        plt.plot(rateA[0],rateA[1] ,'b*', label = "Equal opportunity")
-        plt.plot(rateC[0],rateC[1], 'g*', label = "Equal opportunity")
-        plt.plot([rateA[0],rateC[0]],[rateA[1],rateC[1]] ,'r')
+        plt.plot(rate[0][0],rate[0][1] ,'b*', label = "Equal opportunity")
+        plt.plot(rate[1][0],rate[1][1], 'g*', label = "Equal opportunity")
+        plt.plot([rate[0][0],rate[1][0]],[rate[0][1],rate[1][1]] ,'r')
         plt.legend()
         plt.show() 
     
  
-    return max_acc, maxtA, maxtC, rateA, rateC,conf_before, conf_after, acc_before, acc_after, rate_before
+    return max_acc, maxt, rate ,conf_before, conf_after, acc_before, acc_after, rate_before
 
 #TPR_A1, TPR_C1, FPR_A, FPR_C, sigma, T, CLVar = Tpr_afri, Tpr_cau, Fpr_afri, Fpr_cau, Sigma, T, Equal_rf

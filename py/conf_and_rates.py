@@ -7,6 +7,7 @@ Created on Thu Jun 11 10:32:30 2020
 import numpy as np
 import seaborn as sns
 import pandas as pd
+
 def plot_conf(conf_mtrx):
     """
     input: confusion matrix of type conf(tp, fp, tn, fn)

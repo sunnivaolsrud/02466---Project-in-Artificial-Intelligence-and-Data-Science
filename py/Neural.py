@@ -33,7 +33,7 @@ y_train = y[0:upper]
 y_test = y[upper:]
 """
 
-model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/NN_model.h5")
+model = load_model("./NN_model.h5")
 
 def train_NN(n_epoch):
        model = Sequential()
@@ -57,6 +57,7 @@ _, accuracy = model.evaluate(X_test, y_test)
 
 print('Accuracy: %.2f' % (accuracy*100))
 
+"""
 def ROC_NN(A):
 
        A = A.values[test_index]
@@ -132,6 +133,7 @@ plt.plot(FPR['African-American'], TPR['African-American'], label = 'african-amer
 
 plt.legend()
 plt.show()
+"""
 
 """
 

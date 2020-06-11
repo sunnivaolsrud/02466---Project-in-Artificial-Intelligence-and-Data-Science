@@ -136,7 +136,7 @@ class equal:
         return RFPR, RTPR
     
     
-    def ROC_(self,T, models, makeplot=True, GetAllOutput=False):
+    def ROC_(self,T, models):
         """
         Allthresholds: list of all thresholds of ROC curve. 
         For A=a , allthresholds[i] is the thresholds used to compute (allfpr[i],alltpr[i])
@@ -146,14 +146,14 @@ class equal:
         ALLfpr, ALLtpr = {}, {}
         
         
-        for idx,R in enumerate(self.Race): 
+        for i,R in enumerate(self.Race): 
             fprl, tprl = [], []
-            for thres in T: 
+            for t in T: 
                 if models:    
-                    conf_mtrx = self.conf_models(thres, idx)
+                    conf_mtrx = self.conf_models(t, i)
                     
                 else: 
-                    conf_mtrx = self.conf_(thres, idx)
+                    conf_mtrx = self.conf_(t, i)
                 RFPR, RTPR = self.FP_TP_rate(conf_mtrx)
                 RFPR = [RFPR]
                 RTPR = [RTPR]

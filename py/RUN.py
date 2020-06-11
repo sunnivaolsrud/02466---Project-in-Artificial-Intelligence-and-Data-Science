@@ -30,6 +30,10 @@ A = pd.DataFrame(A)
 ytrue = ytrue.values[test_index]
 ytrue = pd.DataFrame(ytrue)
 
+#thresholds and sigma
+T = np.arange(0,1.001,0.001)
+sigma = 0.001
+
 
 #%% Random forrest
 model_rf = load_classifier("RF")
@@ -43,97 +47,211 @@ Equal_rf = equal(A[0], yhat_rf[0], ytrue[0], N=400)
 #Equalised odds
 group = 'African-American'
 p0 = [1,1]
-T = np.arange(0,1.001,0.001)
-FP_TP_rate_A, FP_TP_rate_C, ACC, conf_odds= equal_odds(T, Equal_rf, group, p0, plot = True)
+FPR_TPR_odds, ACC, conf_odds, tA_odds, tC_odds= equal_odds(T, Equal_rf, group, p0, plot = True)
 
 #Equal opportunity
-Sigma = 0.001
-max_acc, maxtA, maxtC, rateA, rateC,conf_before, conf_after, acc_before, acc_after, rate_before= equal_opportunity(Sigma, T, Equal_rf, plot = True)
+max_acc, t_odds, FPR_TPR_opp,conf_before, conf_after, acc_before, acc_after, rate_before= equal_opportunity(sigma, T, Equal_rf, plot = True)
  
-##Print accuracy of conf mtrx
-#Before 
-print("Accuracy before of 'before' classifier, African-American: %s" %acc_before[0])
-print("Accuracy before of 'before' classifier, Caucasian: %s" %acc_before[1])
-print("                 ")
-#equalised odds classifier
-print("Accuracy of equalised odds classifier, African-American %s" %ACC[0]) 
-print("Accuracy of equalised odds classifier, Caucasian %s" %ACC[1]) 
-print("                 ")
-#equal opportunity
-print("Accuracy of equal opportunity classifier, African-American %s" %acc_after[0]) 
-print("Accuracy of equal opportunity classifier, Caucasian %s" %acc_after[1])
-print("                 ")
-print("                 ")
 
-##Print TPR, FPR 
-print("Before, African-American")
-print("TPR: %s" %rate_before[0][0])
-print("FPR: %s" %rate_before[0][1])
-print("                 ")
-print("Before, Caucasian")
-print("TPR: %s" %rate_before[1][0])
-print("FPR: %s" %rate_before[1][1])
-print("                 ")
-print("Equalised odds classfier, African-American")
-print("TPR: %s" %FP_TP_rate_A[0])
-print("FPR: %s" %FP_TP_rate_A[1])
-print("                 ")
-print("Equalised odds classfier, Caucasian")
-print("TPR: %s" %FP_TP_rate_C[0])
-print("FPR: %s" %FP_TP_rate_C[1])
-print("                 ")
-print("Equal opportunity classifier, African-American")
-print("TPR: %s" %rateA[0])
-print("FPR: %s" %rateA[1])
-print("                 ")
-print("Equal opportunity classifier, Caucasian")
-print("TPR: %s" %rateC[0])
-print("FPR: %s" %rateC[1])
+#Define number of observations in each class
+n_A = Equal_rf.Freq[0]
+n_C = Equal_rf.Freq[1]
 
-#Confusion matricer
-#Before
-plot_conf(conf_before[0])
-plt.show()
-plot_conf(conf_before[1])
-plt.show()
-#After equalised odds
-plot_conf(conf_odds[0])
-plt.show()
-plot_conf(conf_odds[1])
-plt.show()
-
-#After equal opportunity
-plot_conf(conf_after[0])
-plt.show()
-plot_conf(conf_after[1])
-plt.show()
+#weighted relative acc
+w_acc_odd = (ACC[0]*n_A + ACC[1]*n_C)/(n_A+n_C)
+w_acc_opp = (acc_after[0]*n_A + acc_after[1]*n_C)/(n_A+n_C)
 
 #%% NN
-def ROC_NN(A, model, pred, ytrue, X_test):
-
-       pred = model.predict(X_test)
-
-       equal_NN = equal(A[0],pred,ytrue, N =400)
-
-       T = np.arange(0,1.001,0.001)
-
-       FPR, TPR = equal_NN.ROC_(T, models = True)
-
-       return T , equal_NN, FPR, TPR
-
 model_nn = load_classifier("NN")
 y_nn = model_nn.predict(X_test)
 loss_nn_test, acc_nn_test = model_nn.evaluate(X_test, y_test, verbose = 0)
 loss_nn_train, acc_nn_train = model_nn.evaluate(X_train, y_train, verbose = 0)
 
+print("Test accuracy, NN:     %s" %acc_nn_test)
+print("Test loss, NN:     %s" %loss_nn_test)
+print("Training accuracy, NN: %s" %acc_nn_train)
+print("Training loss, NN: %s" %loss_nn_train)
+
+
 #Compute FPR and TPR of NN. And define class variable of equal class. 
-equal_NN = equal(A[0],y_nn,ytrue, N =400)
+equal_NN = equal(A[0],y_nn,ytrue[0], N =400)
 
 #Equalised odds
 group = 'African-American'
 p0 = [1,1]
-#Rate_A_NN, FP_TP_C_NN, ACC_NN, odd_confA_NN, odds_confC_NN = equal_odds(T, equal_NN, group, p0, plot = True)
+FPR_TPR_odds_nn, accNN, conf_odds_nn, tAodds_nn, tCodds_nn = equal_odds(T, equal_NN, group, p0, plot = True)
 
-#hej, hej1, hej2, hej3, hej4 = equal_odds(T, equal_NN, group, p0, plot = True)
+#Equal opportunity
+max_acc_nn, t_odds_nn, FPR_TPR_opp_nn,conf_before_nn, conf_opp_nn, acc_before_nn, acc_opp_nn, rate_before_nn = equal_opportunity(sigma, T, equal_NN, plot = True)
 
-rateANNods, rateCNNods, accNN, conf_odds = equal_odds(T, equal_NN, group, p0, plot = True)
+#weighted relative acc
+w_acc_odd_nn = (accNN[0]*n_A + accNN[1]*n_C)/(n_A+n_C)
+w_acc_opp_nn = (acc_opp_nn[0]*n_A + acc_opp_nn[1]*n_C)/(n_A+n_C)
+#%% Print results
+print("RANDOM FORREST")
+print("                 ")
+print("BEFORE CORRECTING FOR BIAS")
+print("                 ")
+print("Accuracy:")
+print("African-American: %s" %acc_before[0])
+print("Caucasian: %s" %acc_before[1])
+print("                 ")
+print("                 ")
+print("FPR and TPR:")
+print("African-American")
+print("TPR: %s" %rate_before[0][0])
+print("FPR: %s" %rate_before[0][1])
+print("Caucasian")
+print("TPR: %s" %rate_before[1][0])
+print("FPR: %s" %rate_before[1][1])
+print("                 ")
+print("                 ")
+print("                 ")
+plot_conf(conf_before[0])
+plt.show()
+plot_conf(conf_before[1])
+plt.show()
+
+#equalised odds classifier
+print("EQUALISED ODDS CLASSIFIER")
+print("                 ")
+print("Thresholds:")
+print("African-American: %s" %tA_odds)
+print("Caucasian: %s and %s" %(tC_odds[0],tC_odds[1]))
+print("                 ")
+print("                 ")
+print("FPR and TPR:")
+print("African-American")
+print("TPR: %s" %FPR_TPR_odds[0][0])
+print("FPR: %s" %FPR_TPR_odds[0][1])
+print("Caucasian")
+print("TPR: %s" %FPR_TPR_odds[1][0])
+print("FPR: %s" %FPR_TPR_odds[1][1])
+print("Equal opportunity classifier, African-American")
+print("                 ")
+print("                 ")
+print("Accuracy:")
+print("African-American %s" %ACC[0]) 
+print("Caucasian %s" %ACC[1]) 
+print("                 ")
+print("Weighted accuracy: %s" %w_acc_odd)
+print("                 ")
+print("                 ")
+print("                 ")
+plot_conf(conf_odds[0])
+plt.show()
+plot_conf(conf_odds[1])
+plt.show()
+#equal opportunity
+print("EQUAL OPPORTUNITY CLASSIFIER")
+print("                 ")
+print("Thresholds:")
+print("African-American: %s" %t_odds[0])
+print("Caucasian: %s" %t_odds[1])
+print("                 ")
+print("                 ")
+print("FPR and TPR:")
+print("African-American")
+print("TPR: %s" %FPR_TPR_opp[0][0])
+print("FPR: %s" %FPR_TPR_opp[0][1])
+print("Caucasian")
+print("TPR: %s" %FPR_TPR_opp[1][0])
+print("FPR: %s" %FPR_TPR_opp[1][1])
+print("                 ")
+print("                 ")
+print("Accuracy:")
+print("African-American %s" %acc_after[0]) 
+print("Caucasian %s" %acc_after[1])
+print("                 ")
+print("Weighted accuracy: %s" %w_acc_opp)
+plot_conf(conf_after[0])
+plt.show()
+plot_conf(conf_after[1])
+plt.show()
+
+
+
+######################################################
+print("NEURAL NETWORK")
+print("                 ")
+print("BEFORE CORRECTING FOR BIAS")
+print("                 ")
+print("Accuracy:")
+print("African-American: %s" %acc_before_nn[0])
+print("Caucasian: %s" %acc_before_nn[1])
+print("                 ")
+print("                 ")
+print("FPR and TPR:")
+print("African-American")
+print("TPR: %s" %rate_before_nn[0][0])
+print("FPR: %s" %rate_before_nn[0][1])
+print("Caucasian")
+print("TPR: %s" %rate_before_nn[1][0])
+print("FPR: %s" %rate_before_nn[1][1])
+print("                 ")
+print("                 ")
+print("                 ")
+plot_conf(conf_before_nn[0])
+plt.show()
+plot_conf(conf_before_nn[1])
+plt.show()
+
+#equalised odds classifier
+print("EQUALISED ODDS CLASSIFIER")
+print("                 ")
+print("Thresholds:")
+print("African-American: %s" %tAodds_nn)
+print("Caucasian: %s and %s" %(tCodds_nn[0],tCodds_nn[1]))
+print("                 ")
+print("                 ")
+print("FPR and TPR:")
+print("African-American")
+print("TPR: %s" %FPR_TPR_odds_nn[0][0])
+print("FPR: %s" %FPR_TPR_odds_nn[0][1])
+print("Caucasian")
+print("TPR: %s" %FPR_TPR_odds_nn[1][0])
+print("FPR: %s" %FPR_TPR_odds_nn[1][1])
+print("Equal opportunity classifier, African-American")
+print("                 ")
+print("                 ")
+print("Accuracy:")
+print("African-American %s" %accNN[0]) 
+print("Caucasian %s" %accNN[1]) 
+print("                 ")
+print("Weighted accuracy: %s" %w_acc_odd_nn)
+print("                 ")
+print("                 ")
+print("                 ")
+plot_conf(conf_odds_nn[0])
+plt.show()
+plot_conf(conf_odds_nn[1])
+plt.show()
+
+#equal opportunity
+print("EQUAL OPPORTUNITY CLASSIFIER")
+print("                 ")
+print("Thresholds:")
+print("African-American: %s" %t_odds_nn[0])
+print("Caucasian: %s" %t_odds_nn[1])
+print("                 ")
+print("                 ")
+print("FPR and TPR:")
+print("African-American")
+print("TPR: %s" %FPR_TPR_opp_nn[0][0])
+print("FPR: %s" %FPR_TPR_opp_nn[0][1])
+print("Caucasian")
+print("TPR: %s" %FPR_TPR_opp_nn[1][0])
+print("FPR: %s" %FPR_TPR_opp_nn[1][1])
+print("                 ")
+print("                 ")
+print("Accuracy:")
+print("African-American %s" %acc_opp_nn[0]) 
+print("Caucasian %s" %acc_opp_nn[1])
+print("                 ")
+print("Weighted accuracy: %s" %w_acc_opp_nn)
+
+plot_conf(conf_opp_nn[0])
+plt.show()
+plot_conf(conf_opp_nn[1])
+plt.show()
+
