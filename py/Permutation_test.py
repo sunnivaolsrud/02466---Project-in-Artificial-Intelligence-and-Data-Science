@@ -83,9 +83,9 @@ def permutation_test(n_perm, name):
 
 #print(permutation(1,"NN"))
 
-#p_values = permutation_test(2, "NN")
+p_values = permutation_test(2, "NN")
 
-#np.save("p_values_29", p_values)
+np.save("p_values_29", p_values)
 
 
 
