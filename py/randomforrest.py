@@ -11,6 +11,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from Equal_opportunity import equal_opportunity 
+from conf_and_rates import plot_conf
+import numpy as np
 
 
 #%% Functions
@@ -139,7 +141,7 @@ def equal_odds(T, CLVar, group, p0, plot = False):
         plt.legend()
         plt.show()
         
-    return FP_TP_rate_A, FP_TP_rate_C, ACC_A, ACC_C, Fpr_cau, Tpr_cau, Fpr_afri, Tpr_afri
+    return FP_TP_rate_A, FP_TP_rate_C, ACC_A, ACC_C, Fpr_cau, Tpr_cau, Fpr_afri, Tpr_afri, postconf_afri, postconf_cau 
 
 #%%
     
@@ -172,36 +174,28 @@ p0 = [1,1]
 T = np.arange(0,1.001,0.001)
 
 #Equalised odds
-FP_TP_rate_A, FP_TP_rate_C, ACC_A, ACC_C, Fpr_cau, Tpr_cau, Fpr_afri, Tpr_afri= equal_odds(T, Equal_rf, group, p0, plot = True)
+FP_TP_rate_A, FP_TP_rate_C, ACC_A, ACC_C, Fpr_cau, Tpr_cau, Fpr_afri, Tpr_afri, postconf_afri, postconf_cau= equal_odds(T, Equal_rf, group, p0, plot = True)
 
 
 #Equal opportunity
 #rateA and rateC includes both FPR and TPR
 Sigma = 0.001
 max_acc, maxtA, maxtC, rateA, rateC, conf_before_A, conf_before_C, conf_after_A, conf_after_C = equal_opportunity(Sigma, T, Equal_rf, plot = True)
+            
 
-def plot_conf(conf_mtrx):
-    """
-    input: confusion matrix of type conf(tp, fp, tn, fn)
-    """
-    conf = np.empty([2,2])
-    conf[0,0] = conf_mtrx[0]
-    
-    conf[0,1] = conf_mtrx[1]
-    conf[1,0] = conf_mtrx[3]
-    conf[1,1] = conf_mtrx[2]
-    
-    df = pd.DataFrame(conf, index = ["Predictive (1)", "Predictive (0)"], columns = ["Actual (1)","Actual (0)"])
-    import seaborn as sns
+#Compute Confusions matrices and rates
 
-    sns.heatmap(df/np.sum(df), annot=True, 
-            fmt='.2%', cmap='Blues')
-    return conf 
-                
+#Before
+plot_conf(postconf_afri)
+plot_conf(postconf_cau)
 
-conf = plot_conf(conf_after_C)
+#Equalisded odds
+plot_conf(conf_before_C)
+plot_conf(conf_before_A)
 
-     
-#np.asarray(conf_after_C).reshape(2,2,order = 'C')
+#Equal opportunity
+plot_conf(conf_after_C)
+plot_conf(conf_after_A)
+
 
 #
