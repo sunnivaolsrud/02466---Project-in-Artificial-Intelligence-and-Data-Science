@@ -13,8 +13,11 @@ def load_classifier(name):
 
         model = load_model("./NN_model.h5")
 
-    if name == "RF":
+    elif name == "RF":
         model = pickle.load(open("./RF.sav", 'rb'))
+        
+    else:
+        print("Wrong model name")
 
     return model
 
@@ -36,7 +39,7 @@ def permutation(n_perm, name, plots = False):
             elif name == "RF":
                 perm_accuracy = model.score(X_perm,y_test)
             else:
-                print("You broke the code")
+                print("Wrong name")
                 return
 
             accs[trial,idx] = perm_accuracy 
@@ -65,8 +68,6 @@ def permutation(n_perm, name, plots = False):
 
     return accs
 
-
-
 def permutation_test(n_perm, name):
 
     accs = permutation(n_perm, name)
@@ -79,6 +80,13 @@ def permutation_test(n_perm, name):
 
     return p_values
 
+
 #print(permutation(1,"NN"))
 
-#print(permutation_test(2, "NN"))
+#p_values = permutation_test(2, "NN")
+
+#np.save("p_values_29", p_values)
+
+
+
+
