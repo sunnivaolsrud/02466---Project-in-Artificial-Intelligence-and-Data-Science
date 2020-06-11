@@ -1,15 +1,16 @@
 import numpy as np
 from sklearn.utils import resample
-from Process_data import X_train, y_train, X_test, y_test, train_index, test_index
+from Process_data import X_train, y_train, X_test, y_test, train_index, test_index, labels
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
+import pickle
+from sklearn.ensemble import RandomForestClassifier
 
 
 def Permutation(n_perm, model_type):
     X_perm = X_test
 
-    n_perm = 10
-    n_attr = 29
+    n_attr = X_test.shape[1]
 
     accs = np.zeros([n_perm,n_attr])
     losses = np.zeros([n_perm,n_attr])
@@ -22,13 +23,13 @@ def Permutation(n_perm, model_type):
                 model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/First.h5")
                 perm_loss, perm_accuracy = model.evaluate(X_perm, y_test)
             elif model_type == "RF":
-                predictions = model.predict(X_perm)
-                perm_accuracy = sum(predictions == y_test)
+                model = pickle.load(open("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/RF.sav", 'rb'))
+                perm_accuracy = model.score(X_perm,y_test)
             else:
                 print("Model not defined")
                 return 
             accs[trial,idx] = perm_accuracy 
-            losses[trial,idx] = perm_loss
+            #losses[trial,idx] = perm_loss
                      
     #loss_mean = np.mean(losses,axis=0) 
     accs_mean = np.mean(accs, axis = 0)
@@ -52,3 +53,6 @@ def Permutation(n_perm, model_type):
     plt.show()
 
     return accs
+
+
+print(Permutation(2, "RF"))

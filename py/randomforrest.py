@@ -202,6 +202,12 @@ def plot_conf(conf_mtrx):
 conf = plot_conf(conf_after_C)
 
      
-#np.asarray(conf_after_C).reshape(2,2,order = 'C')
+# np.asarray(conf_after_C).reshape(2,2,order = 'C')
 
-#
+import pickle
+
+filename = 'RF.sav'
+pickle.dump(model, open(filename, 'wb'))
+
+# load
+
