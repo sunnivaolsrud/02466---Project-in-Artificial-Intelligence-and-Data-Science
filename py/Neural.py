@@ -12,8 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from POST import equal
 from Process_data import A, ytrue, yhat
-
 from Process_data import X_train, y_train, X_test, y_test, train_index, test_index
+from Post_RawData import line, percentile
 
 np.random.seed(21)
 
@@ -57,7 +57,6 @@ _, accuracy = model.evaluate(X_test, y_test)
 
 print('Accuracy: %.2f' % (accuracy*100))
 
-
 def ROC_NN(A):
 
        A = A.values[test_index]
@@ -71,13 +70,70 @@ def ROC_NN(A):
 
        FPR, TPR = equal_NN.ROC_(T, models = True)
 
-       plt.plot(FPR['Caucasian'], TPR['Caucasian'], label = 'caucasian')
-       plt.plot(FPR['African-American'], TPR['African-American'], label = 'african-american')
-       plt.legend()
-       plt.show()
+       return T , equal_NN, FPR, TPR
 
+T, equal_NN, FPR, TPR = ROC_NN(A)
 
-ROC_NN(A)
+accs_NN = equal_NN.acc_(T, models = True)
+
+lower_ROC = accs_NN["African-American"]
+
+max_idx = np.argmax(lower_ROC)
+
+best_thres = T[max_idx]
+
+FPRA = FPR["African-American"]
+TRPA = TPR["African-American"]
+
+FPRC = FPR["Caucasian"]
+TPRC = TPR["Caucasian"]
+
+max_A = [FPRA[max_idx], TRPA[max_idx]]
+
+def estimate(x,y):
+        a1 = (y[1]-y[0])/(x[1]-x[0]+0.000000000000000000000000000001)
+        b1 = y[1]-a1*x[1]      
+        return a1, b1
+
+yall = np.empty(len(FPRC)-2)
+
+p0 = [1,1]
+
+for i in range(len(FPRC)-2):
+    a1,b1 = estimate([p0[0],FPRC[i+1]], [p0[1],TPRC[i+1]])
+    y = a1*max_A[0]+b1
+    yall[i] = y
+
+diff = []
+for i in range(len(yall)): 
+    diff.append(abs(yall[i]-max_A[1]))
+
+minidx = np.argmin(diff) + 1
+
+max_C = [FPRC[minidx],TPRC[minidx]]
+
+perc = percentile(p0,max_A,max_C)
+if p0 == [0,0]:
+    t_cau1 = T[-1] 
+else: 
+    t_cau1 = T[0]
+
+Conf_A =  equal_NN.conf_models(best_thres,0)
+Conf_C = equal_NN.calc_ConfusionMatrix(t_cau1,T[minidx],1,perc)
+
+print(equal_NN.FP_TP_rate(Conf_A))
+print(equal_NN.FP_TP_rate(Conf_C))
+
+plt.plot(max_A[0],max_A[1], "o")
+plt.plot(max_C[0],max_C[1], "o")
+
+plt.plot(FPR['Caucasian'], TPR['Caucasian'], label = 'caucasian')
+plt.plot(FPR['African-American'], TPR['African-American'], label = 'african-american')
+
+plt.legend()
+plt.show()
+
+"""
 
 labels = twoyears.data.drop(["decile_score.1"],axis =1)
 labels = labels.columns.values
@@ -122,3 +178,4 @@ def Perm_NN():
        plt.show()
 
        return losses, accs
+"""
