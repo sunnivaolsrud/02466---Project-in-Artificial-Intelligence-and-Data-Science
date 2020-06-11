@@ -25,8 +25,74 @@ def plot_conf(conf_mtrx):
             fmt='.2%', cmap='Blues')
     return conf 
     
-
-def rates(conf_mtrx):
-    """input: confusion matrix of type conf(tp, fp, tn, fn)
     """
+        input to functions below: 
+        confusion matrix of type conf(tp, fp, tn, fn)
+    """
+def ppv(conf_mtrx):
+  
+    tp = conf_mtrx[0]
+    fp = conf_mtrx[1]
+    
+    ppv = tp/(tp+fp)    
+    return ppv
+
+def tdr(conf_mtrx):
+  
+    tp = conf_mtrx[0]
+    fn = conf_mtrx[3]
+    
+    tdr = tp/(tp+fn)    
+    return tdr
+    
+def fOr(conf_mtrx):
+
+    tn = conf_mtrx[2]
+    fn = conf_mtrx[3]
+    
+    fOr = fn/(tn+fn)    
+    return fOr
+       
+def fnr(conf_mtrx):
+  
+    tp = conf_mtrx[0]
+    fn = conf_mtrx[3]
+    
+    fnr = fn/(tp+fn)    
+    return fnr    
+
+def fdr(conf_mtrx):
+  
+    tp = conf_mtrx[0]
+    fp = conf_mtrx[1]
+    
+    fdr = fp/(tp+fp)    
+    return fdr 
+    
+def fpr(conf_mtrx):
+
+    fp = conf_mtrx[1]
+    tn = conf_mtrx[2]
+    
+    fpr = fp/(fp+tn)   
+    return fpr
+    
+def npv(conf_mtrx):
+  
+    fp = conf_mtrx[1]
+    tn = conf_mtrx[2]
+    
+    npv = tn/(tn+fp)   
+    return npv
+    
+def tnr(conf_mtrx):
+
+    fp = conf_mtrx[1]
+    tn = conf_mtrx[2]
+    
+    tnr = tn/(tn+fp)   
+    return tnr    
+    
+    
+
     

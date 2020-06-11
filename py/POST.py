@@ -13,7 +13,7 @@ import matplotlib as plt
 import matplotlib.pyplot as plt
 import collections
 ConfusionMatrix = collections.namedtuple('conf', ['tp','fp','tn','fn']) 
-from Process_data import A, ytrue, yhat
+#from Process_data import A, ytrue, yhat
 
 
 class equal:

@@ -5,6 +5,9 @@ Created on Thu Jun 11 11:17:10 2020
 @author: Værksted Matilde
 """
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 def percentile(p1,p2,p3):
     l1 = np.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2)
     l2 = np.sqrt((p1[0]-p3[0])**2+(p1[1]-p3[1])**2)
@@ -52,7 +55,7 @@ def equal_odds(T, CLVar, group, p0, plot = False):
     Fpr_afri, Tpr_afri = Fpr_rf['African-American'], Tpr_rf['African-American']
 
     #accuracies of all values of t
-    accs_rf = Equal_rf.acc_(T, models = True)
+    accs_rf =  CLVar.acc_(T, models = True)
 
     #Find point with highest acc on "lowest" ROC curve
     accs_rf = accs_rf[group] #all acc
@@ -90,12 +93,16 @@ def equal_odds(T, CLVar, group, p0, plot = False):
     
     postconf_afri =  CLVar.conf_models(t_afri,0)
     postconf_cau = CLVar.calc_ConfusionMatrix(t_cau1,t_cau2, 1,percent)
+    
+    conf = [postconf_afri,postconf_cau ]
 
     FP_TP_rate_A = CLVar.FP_TP_rate(postconf_afri)
     FP_TP_rate_C = CLVar.FP_TP_rate(postconf_cau)
     
     ACC_A = CLVar.acc_with_conf(postconf_afri)
     ACC_C = CLVar.acc_with_conf(postconf_cau)
+    
+    ACC = [ACC_A, ACC_C]
 
     if plot == True: 
         
@@ -110,4 +117,4 @@ def equal_odds(T, CLVar, group, p0, plot = False):
         plt.legend()
         plt.show()
         
-    return FP_TP_rate_A, FP_TP_rate_C, ACC_A, ACC_C, Fpr_cau, Tpr_cau, Fpr_afri, Tpr_afri, postconf_afri, postconf_cau 
+    return FP_TP_rate_A, FP_TP_rate_C, ACC, conf

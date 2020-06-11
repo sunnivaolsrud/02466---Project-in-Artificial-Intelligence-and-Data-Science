@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.utils import resample
-from Process_data import X_train, y_train, X_test, y_test, train_index, test_index, labels
+#from Process_data import X_train, y_train, X_test, y_test, train_index, test_index, labels
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 import pickle
@@ -11,10 +11,10 @@ def load_classifier(name):
 
     if name == "NN":
 
-        model = load_model("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/NN_model.h5")
+        model = load_model("./NN_model.h5")
 
     if name == "RF":
-        model = pickle.load(open("C:/Users/rasmu/OneDrive/Dokumenter/4. semester/Fagprojekt/02466---Project-in-Artificial-Intelligence-and-Data-Science/py/RF.sav", 'rb'))
+        model = pickle.load(open("./RF.sav", 'rb'))
 
     return model
 
@@ -79,6 +79,6 @@ def permutation_test(n_perm, name):
 
     return p_values
 
-print(permutation(1,"NN"))
+#print(permutation(1,"NN"))
 
 #print(permutation_test(2, "NN"))

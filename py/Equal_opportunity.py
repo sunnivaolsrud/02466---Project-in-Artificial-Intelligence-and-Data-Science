@@ -8,8 +8,13 @@ Created on Wed Jun 10 19:13:54 2020
 #PR_A1, TPR_C1 = Tpr_afri, Tpr_cau
 import matplotlib.pyplot as plt
 import numpy as np
+#from POST import *
+
 def equal_opportunity(sigma, T, CLVar, plot = False):
     """
+    Equal_opportunity computes conf matrx, acc, (TPR, FPR) before and after the equal opportunity step is aplied
+    
+    
     T: list of thresholds
     sigma: Accepted difference between  TPR_A and TPR_C
     CLVar: Name of equal class variable 
@@ -19,10 +24,8 @@ def equal_opportunity(sigma, T, CLVar, plot = False):
     maxtC: Maximal threshold caucasian
     rateA: FPR and TPR african american
     rateC: FPR and TPR caucasian
-    conf_before_A: conf matrix with threshold 0.5 African American
-    conf_before_C: conf matrix with threshold 0.5 caucasian
-    conf_after_A: conf mtrx of equal opportunity classifier African American
-    conf_after_C: conf mtrx of equal opportunity classifier caucasian
+    conf_before_A: conf matrix (both groups) with threshold 0.5
+    conf_after_C: conf mtrx (both groups) of equal opportunity classifier
     """
 
     #Compute FPR and TPR 
@@ -105,10 +108,20 @@ def equal_opportunity(sigma, T, CLVar, plot = False):
     #Conf mtrx before 
     conf_before_A = CLVar.conf_models(0.5, 0)
     conf_before_C = CLVar.conf_models(0.5, 1)
+    conf_before = [conf_before_A,conf_before_C]
     
     #conf mtrx after
     conf_after_A = CLVar.conf_models(maxtA, 0)
     conf_after_C = CLVar.conf_models(maxtC, 1)
+    conf_after = [conf_after_A,conf_after_C]
+    
+    #acc 
+    acc_before = [CLVar.acc_with_conf(conf_before_A), CLVar.acc_with_conf(conf_before_C)]
+    acc_after = [CLVar.acc_with_conf(conf_after_A), CLVar.acc_with_conf(conf_after_C)]
+    
+    #(FPR, TPR) before
+    rate_before = [CLVar.FP_TP_rate(conf_before_A), CLVar.FP_TP_rate(conf_before_C)]
+    
     
     if plot == True: 
         
@@ -119,9 +132,9 @@ def equal_opportunity(sigma, T, CLVar, plot = False):
         plt.plot(rateC[0],rateC[1], 'g*', label = "Equal opportunity")
         plt.plot([rateA[0],rateC[0]],[rateA[1],rateC[1]] ,'r')
         plt.legend()
-        plt.show()   
-        
+        plt.show() 
     
-    return max_acc, maxtA, maxtC, rateA, rateC,conf_before_A, conf_before_C, conf_after_A, conf_after_C
+ 
+    return max_acc, maxtA, maxtC, rateA, rateC,conf_before, conf_after, acc_before, acc_after, rate_before
 
 #TPR_A1, TPR_C1, FPR_A, FPR_C, sigma, T, CLVar = Tpr_afri, Tpr_cau, Fpr_afri, Fpr_cau, Sigma, T, Equal_rf

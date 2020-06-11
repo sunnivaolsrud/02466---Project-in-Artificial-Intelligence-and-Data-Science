@@ -55,6 +55,7 @@ from Process_data import y_train, y_test, X_train, X_test, train_index, test_ind
 train_acc, test_acc, yhat_rf = train_test_RF(model, X_train, y_train, X_test, y_test)
           
 
+
 #save model
 filename = 'RF.sav'
 pickle.dump(model, open(filename, 'wb'))
