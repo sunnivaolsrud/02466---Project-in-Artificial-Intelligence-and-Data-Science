@@ -7,8 +7,9 @@ Created on Thu Jun 11 10:32:30 2020
 import numpy as np
 import seaborn as sns
 import pandas as pd
+import matplotlib.pyplot as plt
 
-def plot_conf(conf_mtrx):
+def plot_conf(conf_mtrx, title):
     """
     input: confusion matrix of type conf(tp, fp, tn, fn)
     """
@@ -21,9 +22,12 @@ def plot_conf(conf_mtrx):
     
     df = pd.DataFrame(conf, index = ["Predictive (1)", "Predictive (0)"], columns = ["Actual (1)","Actual (0)"])
 
+    ax = plt.axes()
+    sns.heatmap(df/np.sum(df), annot=True, fmt='.2%', cmap='Blues', ax = ax)
+    
+    ax.set_title(title)
 
-    sns.heatmap(df/np.sum(df), annot=True, 
-            fmt='.2%', cmap='Blues')
+    plt.show()
     return conf 
     
     """

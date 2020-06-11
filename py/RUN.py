@@ -88,6 +88,8 @@ max_acc_nn, t_odds_nn, FPR_TPR_opp_nn,conf_before_nn, conf_opp_nn, acc_before_nn
 w_acc_odd_nn = (accNN[0]*n_A + accNN[1]*n_C)/(n_A+n_C)
 w_acc_opp_nn = (acc_opp_nn[0]*n_A + acc_opp_nn[1]*n_C)/(n_A+n_C)
 #%% Print results
+title = ["RF, Before, A", "RF, Before, C", "RF, odds, A", "RF, odds, C", "RF, opp, A","RF, opp, C",
+         "NN, Before, A", "NN, Before, C", "NN, odds, A", "NN, odds, C", "NN, opp, A","NN, opp, C"]
 print("RANDOM FORREST")
 print("                 ")
 print("BEFORE CORRECTING FOR BIAS")
@@ -107,9 +109,9 @@ print("FPR: %s" %rate_before[1][1])
 print("                 ")
 print("                 ")
 print("                 ")
-plot_conf(conf_before[0])
+plot_conf(conf_before[0], title[0])
 plt.show()
-plot_conf(conf_before[1])
+plot_conf(conf_before[1], title[1])
 plt.show()
 
 #equalised odds classifier
@@ -138,9 +140,9 @@ print("Weighted accuracy: %s" %w_acc_odd)
 print("                 ")
 print("                 ")
 print("                 ")
-plot_conf(conf_odds[0])
+plot_conf(conf_odds[0], title[2])
 plt.show()
-plot_conf(conf_odds[1])
+plot_conf(conf_odds[1], title[3])
 plt.show()
 #equal opportunity
 print("EQUAL OPPORTUNITY CLASSIFIER")
@@ -164,10 +166,10 @@ print("African-American %s" %acc_after[0])
 print("Caucasian %s" %acc_after[1])
 print("                 ")
 print("Weighted accuracy: %s" %w_acc_opp)
-plot_conf(conf_after[0])
-plt.show()
-plot_conf(conf_after[1])
-plt.show()
+plot_conf(conf_after[0], title[4])
+
+plot_conf(conf_after[1], title[5])
+
 
 
 
@@ -191,9 +193,9 @@ print("FPR: %s" %rate_before_nn[1][1])
 print("                 ")
 print("                 ")
 print("                 ")
-plot_conf(conf_before_nn[0])
+plot_conf(conf_before_nn[0], title[6])
 plt.show()
-plot_conf(conf_before_nn[1])
+plot_conf(conf_before_nn[1], title[7])
 plt.show()
 
 #equalised odds classifier
@@ -222,9 +224,9 @@ print("Weighted accuracy: %s" %w_acc_odd_nn)
 print("                 ")
 print("                 ")
 print("                 ")
-plot_conf(conf_odds_nn[0])
+plot_conf(conf_odds_nn[0], title[8])
 plt.show()
-plot_conf(conf_odds_nn[1])
+plot_conf(conf_odds_nn[1], title[9])
 plt.show()
 
 #equal opportunity
@@ -250,8 +252,8 @@ print("Caucasian %s" %acc_opp_nn[1])
 print("                 ")
 print("Weighted accuracy: %s" %w_acc_opp_nn)
 
-plot_conf(conf_opp_nn[0])
+plot_conf(conf_opp_nn[0], title[10])
 plt.show()
-plot_conf(conf_opp_nn[1])
+plot_conf(conf_opp_nn[1], title[11])
 plt.show()
 
