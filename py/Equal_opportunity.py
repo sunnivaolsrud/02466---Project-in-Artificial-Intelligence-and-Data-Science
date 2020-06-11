@@ -8,16 +8,27 @@ Created on Wed Jun 10 19:13:54 2020
 #PR_A1, TPR_C1 = Tpr_afri, Tpr_cau
 import matplotlib.pyplot as plt
 import numpy as np
-def equal_opportunity(TPR_A1, TPR_C1, FPR_A, FPR_C, sigma, T, CLVar, plot = False):
+def equal_opportunity(sigma, T, CLVar, plot = False):
     """
     T: list of thresholds
-    TPR_A: List of TPR of African- American
-    TPR_C: List of TPR of Caucasian
     sigma: Accepted difference between  TPR_A and TPR_C
     CLVar: Name of equal class variable 
-    FPR_A: List of FPR, African-American 
-    TPR_A: List of FPR, caucasian
+    
+    max_acc: Maximal weighted accuracy 
+    maxtA: maximal threshold african american
+    maxtC: Maximal threshold caucasian
+    rateA: FPR and TPR african american
+    rateC: FPR and TPR caucasian
+    conf_before_A: conf matrix with threshold 0.5 African American
+    conf_before_C: conf matrix with threshold 0.5 caucasian
+    conf_after_A: conf mtrx of equal opportunity classifier African American
+    conf_after_C: conf mtrx of equal opportunity classifier caucasian
     """
+
+    #Compute FPR and TPR 
+    FPR, TPR = CLVar.ROC_(T, models = True)
+    FPR_C, TPR_C1 = FPR['Caucasian'], TPR['Caucasian']
+    FPR_A, TPR_A1 = FPR['African-American'], TPR['African-American']
 
     TPR_A = np.asarray(TPR_A1)
     TPR_C = np.asarray(TPR_C1)
@@ -59,7 +70,6 @@ def equal_opportunity(TPR_A1, TPR_C1, FPR_A, FPR_C, sigma, T, CLVar, plot = Fals
                 T_Anew.append(T_A[t_idx])
                 T_Cnew.append(T_C[t_idx])
             
-    
     #compute (TPR, FPR) and accuracy 
     pairsA, pairsC = [], []
     accA, accC = [], []
@@ -92,15 +102,26 @@ def equal_opportunity(TPR_A1, TPR_C1, FPR_A, FPR_C, sigma, T, CLVar, plot = Fals
     rateA = pairsA[maxw]
     rateC = pairsC[maxw]
     
-    #plot with max accu point
-    plt.plot(FPR_C, TPR_C1,'g', label = 'Caucasian')
-    plt.plot(FPR_A, TPR_A1,'b', label = 'African-american')
-    plt.plot(rateA[0],rateA[1] ,'b*', label = "Equal opportunity")
-    plt.plot(rateC[0],rateC[1], 'g*', label = "Equal opportunity")
-    plt.plot([rateA[0],rateC[0]],[rateA[1],rateC[1]] ,'r')
-    plt.legend()
-    plt.show()   
+    #Conf mtrx before 
+    conf_before_A = CLVar.conf_models(0.5, 0)
+    conf_before_C = CLVar.conf_models(0.5, 1)
     
-    return max_acc, maxtA, maxtC, rateA, rateC
+    #conf mtrx after
+    conf_after_A = CLVar.conf_models(maxtA, 0)
+    conf_after_C = CLVar.conf_models(maxtC, 1)
+    
+    if plot == True: 
+        
+        #plot with max accu point
+        plt.plot(FPR_C, TPR_C1,'g', label = 'Caucasian')
+        plt.plot(FPR_A, TPR_A1,'b', label = 'African-american')
+        plt.plot(rateA[0],rateA[1] ,'b*', label = "Equal opportunity")
+        plt.plot(rateC[0],rateC[1], 'g*', label = "Equal opportunity")
+        plt.plot([rateA[0],rateC[0]],[rateA[1],rateC[1]] ,'r')
+        plt.legend()
+        plt.show()   
+        
+    
+    return max_acc, maxtA, maxtC, rateA, rateC,conf_before_A, conf_before_C, conf_after_A, conf_after_C
 
 #TPR_A1, TPR_C1, FPR_A, FPR_C, sigma, T, CLVar = Tpr_afri, Tpr_cau, Fpr_afri, Fpr_cau, Sigma, T, Equal_rf

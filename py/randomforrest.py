@@ -176,12 +176,32 @@ FP_TP_rate_A, FP_TP_rate_C, ACC_A, ACC_C, Fpr_cau, Tpr_cau, Fpr_afri, Tpr_afri= 
 
 
 #Equal opportunity
+#rateA and rateC includes both FPR and TPR
 Sigma = 0.001
-max_acc, maxtA, maxtC, rateA, rateC = equal_opportunity(Tpr_afri, Tpr_cau, Fpr_afri, Fpr_cau, Sigma, T, Equal_rf, plot = True)
-            
-    
-    
-    
+max_acc, maxtA, maxtC, rateA, rateC, conf_before_A, conf_before_C, conf_after_A, conf_after_C = equal_opportunity(Sigma, T, Equal_rf, plot = True)
 
+def plot_conf(conf_mtrx):
+    """
+    input: confusion matrix of type conf(tp, fp, tn, fn)
+    """
+    conf = np.empty([2,2])
+    conf[0,0] = conf_mtrx[0]
+    
+    conf[0,1] = conf_mtrx[1]
+    conf[1,0] = conf_mtrx[3]
+    conf[1,1] = conf_mtrx[2]
+    
+    df = pd.DataFrame(conf, index = ["Predictive (1)", "Predictive (0)"], columns = ["Actual (1)","Actual (0)"])
+    import seaborn as sns
+
+    sns.heatmap(df/np.sum(df), annot=True, 
+            fmt='.2%', cmap='Blues')
+    return conf 
+                
+
+conf = plot_conf(conf_after_C)
 
      
+#np.asarray(conf_after_C).reshape(2,2,order = 'C')
+
+#
